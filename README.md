@@ -45,7 +45,6 @@ Dynamic UI with CSS. Blue font used because its my favourite.
 
 1. Clone the repository
 git clone https://github.com/Aadiyandubey2/Numerology-Website.git
-
 cd Numerology-Website
 
 2. Install dependencies
