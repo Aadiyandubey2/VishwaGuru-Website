@@ -5,17 +5,17 @@
 This project is a full-stack numerology website designed to calculate and analyze numerological values based on user input. The platform provides users with insights based on numerology principles.
 
 🛠️ Tech Stack
-Frontend: HTML, JavaScript, TypeScript ,CSS
+Frontend: HTML, JavaScript, TypeScript ,CSS(Nagaraju Sir supremacy🙏)
 
-Backend: Node.js
+Backend: Node.js(R.I.P. my sleep schedule)
 
-Deployment: Vercel
+Deployment: Vercel(Gone very hard with this part)
 
 🚀 Features
 
-Numerology calculations for names, dates, and other inputs
+Numerology calculations for names, dates, and other inputs also added support for hindi language.
 
-Dynamic UI with CSS
+Dynamic UI with CSS. Blue font used because its my favourite.
 
 📂 Project Structure
 
@@ -41,7 +41,7 @@ Dynamic UI with CSS
 
 └── 📜 .gitignore       # Git ignored files
 
-📌 How to Run Locally
+📌 How to Run Locally(PLease test and give your reaction)
 
 1. Clone the repository
 git clone https://github.com/Aadiyandubey2/Numerology-Website.git
@@ -56,3 +56,4 @@ npm run dev
 4. Build for production
 npm run build
 
+Insta ID:- aadiyan_dubey0
