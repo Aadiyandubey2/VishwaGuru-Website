@@ -41,10 +41,11 @@ Dynamic UI with CSS. Blue font used because its my favourite.
 
 └── 📜 .gitignore       # Git ignored files
 
-📌 How to Run Locally(PLease test and give your reaction)
+📌 How to Run Locally(Please test and give your reaction)
 
 1. Clone the repository
 git clone https://github.com/Aadiyandubey2/Numerology-Website.git
+
 cd Numerology-Website
 
 2. Install dependencies
