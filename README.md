@@ -1,4 +1,4 @@
-📊 Numerology Website
+📊 VishwaGuru Website
 📌 Overview
 This project is a full-stack numerology website designed to calculate and analyze numerological values based on user input. The platform provides users with insights based on numerology principles.
 
