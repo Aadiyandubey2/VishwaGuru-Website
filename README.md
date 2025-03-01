@@ -21,14 +21,23 @@ Dynamic UI with CSS
 
 📦 Numerology-Website
 ├── 📂 src              # Source files
+
 ├── 📂 dist             # Build output
+
 ├── 📜 index.html       # Main entry point
+
 ├── 📜 config.json      # Configuration file
+
 ├── 📜 package.json     # Dependencies and scripts
+
 ├── 📜 tailwind.config.js  # CSS configuration
+
 ├── 📜 eslint.config.js # ESLint configuration
+
 ├── 📜 vite.config.ts   # Vite configuration
+
 ├── 📜 tsconfig.json    # TypeScript configuration
+
 └── 📜 .gitignore       # Git ignored files
 
 📌 How to Run Locally
