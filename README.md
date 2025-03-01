@@ -20,6 +20,7 @@ Dynamic UI with CSS
 📂 Project Structure
 
 📦 Numerology-Website
+
 ├── 📂 src              # Source files
 
 ├── 📂 dist             # Build output
