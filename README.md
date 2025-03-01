@@ -5,21 +5,17 @@
 This project is a full-stack numerology website designed to calculate and analyze numerological values based on user input. The platform provides users with insights based on numerology principles.
 
 🛠️ Tech Stack
-Frontend: HTML, JavaScript, TypeScript
-
-Tailwind CSS, Vite
+Frontend: HTML, JavaScript, TypeScript ,CSS
 
 Backend: Node.js
 
 Deployment: Vercel
 
-Build Tools & Configurations: Webpack, ESLint, PostCSS
-
 🚀 Features
 
 Numerology calculations for names, dates, and other inputs
 
-Dynamic UI with Tailwind CSS
+Dynamic UI with CSS
 
 📂 Project Structure
 
@@ -29,7 +25,7 @@ Dynamic UI with Tailwind CSS
 ├── 📜 index.html       # Main entry point
 ├── 📜 config.json      # Configuration file
 ├── 📜 package.json     # Dependencies and scripts
-├── 📜 tailwind.config.js  # Tailwind CSS configuration
+├── 📜 tailwind.config.js  # CSS configuration
 ├── 📜 eslint.config.js # ESLint configuration
 ├── 📜 vite.config.ts   # Vite configuration
 ├── 📜 tsconfig.json    # TypeScript configuration
