@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { Language } from '../types';
+import { useAuth } from '../context/AuthContext';
+import { numerologyService } from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
 interface NumerologyFormProps {
   onCalculate: (name: string, birthdate: string) => void;
@@ -10,6 +13,9 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
   const [name, setName] = useState('');
   const [birthdate, setBirthdate] = useState('');
   const [errors, setErrors] = useState({ name: '', birthdate: '' });
+  const [saveToProfile, setSaveToProfile] = useState(false);
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
 
   const validateForm = (): boolean => {
     const newErrors = { name: '', birthdate: '' };
@@ -29,10 +35,20 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
     return isValid;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
+      // Calculate numerology
       onCalculate(name, birthdate);
+      
+      // Save to profile if user is logged in and option is selected
+      if (currentUser && saveToProfile) {
+        try {
+          await numerologyService.saveReading(name, birthdate);
+        } catch (error) {
+          console.error('Error saving reading:', error);
+        }
+      }
     }
   };
 
@@ -66,6 +82,39 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
         />
         {errors.birthdate && <p className="mt-1 text-sm text-red-600">{errors.birthdate}</p>}
       </div>
+
+      {currentUser && (
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="saveToProfile"
+            checked={saveToProfile}
+            onChange={(e) => setSaveToProfile(e.target.checked)}
+            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+          />
+          <label htmlFor="saveToProfile" className="ml-2 block text-sm text-gray-700">
+            {language === 'english' ? 'Save this reading to my profile' : 'इस पठन को मेरी प्रोफ़ाइल में सहेजें'}
+          </label>
+        </div>
+      )}
+
+      {!currentUser && (
+        <div className="text-sm text-gray-600 italic">
+          <p>
+            {language === 'english' 
+              ? 'Sign in to save your readings to your profile.' 
+              : 'अपने पठन को अपनी प्रोफ़ाइल में सहेजने के लिए साइन इन करें।'}
+            {' '}
+            <button
+              type="button"
+              onClick={() => navigate('/login')}
+              className="text-indigo-600 hover:text-indigo-800 font-medium"
+            >
+              {language === 'english' ? 'Sign in' : 'साइन इन करें'}
+            </button>
+          </p>
+        </div>
+      )}
 
       <button
         type="submit"
