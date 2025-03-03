@@ -32,10 +32,11 @@ const Signup: React.FC<SignupProps> = ({ language }) => {
       setLoading(true);
       await signup(email, password, name);
       navigate('/dashboard');
-    } catch (err) {
-      setError(language === 'english' 
-        ? 'Failed to create an account' 
-        : 'खाता बनाने में विफल');
+    } catch (err: any) {
+      setError(err.response?.data?.message || 
+        (language === 'english' 
+          ? 'Failed to create an account' 
+          : 'खाता बनाने में विफल'));
     } finally {
       setLoading(false);
     }

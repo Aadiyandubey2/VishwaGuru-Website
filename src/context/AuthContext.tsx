@@ -1,20 +1,21 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { 
-  User, 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  signOut, 
-  onAuthStateChanged,
-  updateProfile
-} from 'firebase/auth';
-import { auth } from '../firebase/config';
+import { api } from '../services/api';
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
 
 interface AuthContextType {
   currentUser: User | null;
   loading: boolean;
-  signup: (email: string, password: string, displayName: string) => Promise<void>;
+  signup: (email: string, password: string, name: string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateProfile: (name: string) => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
+  deleteAccount: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -35,52 +36,133 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const signup = async (email: string, password: string, displayName: string) => {
+  // Check if user is logged in on initial load
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        const response = await api.get('/auth/me');
+        if (response.data.success) {
+          setCurrentUser(response.data.user);
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        // User is not authenticated, that's okay
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuthStatus();
+  }, []);
+
+  // Register a new user
+  const signup = async (email: string, password: string, name: string) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      // Update the user's profile with the display name
-      if (userCredential.user) {
-        await updateProfile(userCredential.user, { displayName });
+      const response = await api.post('/auth/register', {
+        email,
+        password,
+        name
+      });
+
+      if (response.data.success) {
+        setCurrentUser(response.data.user);
+      } else {
+        throw new Error(response.data.message || 'Registration failed');
       }
     } catch (error) {
-      console.error('Error signing up:', error);
+      console.error('Signup error:', error);
       throw error;
     }
   };
 
+  // Login user
   const login = async (email: string, password: string) => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const response = await api.post('/auth/login', {
+        email,
+        password
+      });
+
+      if (response.data.success) {
+        setCurrentUser(response.data.user);
+      } else {
+        throw new Error(response.data.message || 'Login failed');
+      }
     } catch (error) {
-      console.error('Error logging in:', error);
+      console.error('Login error:', error);
       throw error;
     }
   };
 
+  // Logout user
   const logout = async () => {
     try {
-      await signOut(auth);
+      await api.post('/auth/logout');
+      setCurrentUser(null);
     } catch (error) {
-      console.error('Error logging out:', error);
+      console.error('Logout error:', error);
       throw error;
     }
   };
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-      setLoading(false);
-    });
+  // Update user profile
+  const updateProfile = async (name: string) => {
+    try {
+      const response = await api.put('/users/profile', { name });
+      
+      if (response.data.success) {
+        setCurrentUser(prev => prev ? { ...prev, name } : null);
+      } else {
+        throw new Error(response.data.message || 'Profile update failed');
+      }
+    } catch (error) {
+      console.error('Update profile error:', error);
+      throw error;
+    }
+  };
 
-    return unsubscribe;
-  }, []);
+  // Change password
+  const changePassword = async (currentPassword: string, newPassword: string) => {
+    try {
+      const response = await api.put('/users/password', {
+        currentPassword,
+        newPassword
+      });
+      
+      if (!response.data.success) {
+        throw new Error(response.data.message || 'Password change failed');
+      }
+    } catch (error) {
+      console.error('Change password error:', error);
+      throw error;
+    }
+  };
+
+  // Delete account
+  const deleteAccount = async () => {
+    try {
+      const response = await api.delete('/users/account');
+      
+      if (response.data.success) {
+        setCurrentUser(null);
+      } else {
+        throw new Error(response.data.message || 'Account deletion failed');
+      }
+    } catch (error) {
+      console.error('Delete account error:', error);
+      throw error;
+    }
+  };
 
   const value = {
     currentUser,
     loading,
     signup,
     login,
-    logout
+    logout,
+    updateProfile,
+    changePassword,
+    deleteAccount
   };
 
   return (

@@ -2,49 +2,63 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Language, NumerologyResult } from '../../types';
 import NumerologyResultDisplay from '../NumerologyResult';
-import { History, Save } from 'lucide-react';
+import { History, Save, Trash2 } from 'lucide-react';
+import { numerologyService } from '../../services/api';
 
 interface DashboardProps {
   language: Language;
 }
-const mockSavedResults: { id: string; date: string; name: string; result: NumerologyResult }[] = [
-  {
-    id: '1',
-    date: '2025-04-15',
-    name: 'John Doe',
-    result: {
-      destinyNumber: 7,
-      soulUrgeNumber: 5,
-      personalityNumber: 2,
-      lifePathNumber: 9,
-      birthdayNumber: 4
-    }
-  },
-  {
-    id: '2',
-    date: '2025-04-10',
-    name: 'Jane Smith',
-    result: {
-      destinyNumber: 3,
-      soulUrgeNumber: 1,
-      personalityNumber: 2,
-      lifePathNumber: 6,
-      birthdayNumber: 8
-    }
-  }
-];
+
+interface SavedReading {
+  id: string;
+  date: string;
+  name: string;
+  result: NumerologyResult;
+}
 
 const Dashboard: React.FC<DashboardProps> = ({ language }) => {
   const { currentUser } = useAuth();
-  const [savedResults, setSavedResults] = useState<typeof mockSavedResults>([]);
+  const [savedResults, setSavedResults] = useState<SavedReading[]>([]);
   const [selectedResult, setSelectedResult] = useState<NumerologyResult | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setSavedResults(mockSavedResults);
-  }, []);
+    const fetchReadings = async () => {
+      try {
+        setLoading(true);
+        const readings = await numerologyService.getUserReadings();
+        setSavedResults(readings);
+      } catch (err) {
+        setError(language === 'english' 
+          ? 'Failed to load your readings. Please try again later.' 
+          : 'आपके पठन लोड करने में विफल। कृपया बाद में पुनः प्रयास करें।');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReadings();
+  }, [language]);
 
   const handleViewResult = (result: NumerologyResult) => {
     setSelectedResult(result);
+  };
+
+  const handleDeleteReading = async (id: string) => {
+    try {
+      await numerologyService.deleteReading(id);
+      setSavedResults(prev => prev.filter(reading => reading.id !== id));
+      
+      // Clear selected result if it was deleted
+      if (selectedResult && savedResults.find(r => r.id === id)?.result === selectedResult) {
+        setSelectedResult(null);
+      }
+    } catch (err) {
+      setError(language === 'english' 
+        ? 'Failed to delete reading. Please try again.' 
+        : 'पठन हटाने में विफल। कृपया पुनः प्रयास करें।');
+    }
   };
 
   return (
@@ -52,8 +66,8 @@ const Dashboard: React.FC<DashboardProps> = ({ language }) => {
       <div className="bg-white rounded-xl shadow-lg overflow-hidden p-8 mb-8">
         <h2 className="text-2xl font-bold text-indigo-900 mb-6">
           {language === 'english' 
-            ? `Welcome, ${currentUser?.displayName || 'User'}!` 
-            : `स्वागत है, ${currentUser?.displayName || 'उपयोगकर्ता'}!`}
+            ? `Welcome, ${currentUser?.name || 'User'}!` 
+            : `स्वागत है, ${currentUser?.name || 'उपयोगकर्ता'}!`}
         </h2>
         
         <div className="flex items-center mb-6">
@@ -63,26 +77,47 @@ const Dashboard: React.FC<DashboardProps> = ({ language }) => {
           </h3>
         </div>
         
-        {savedResults.length > 0 ? (
+        {error && (
+          <div className="bg-red-50 text-red-600 p-3 rounded-md mb-4">
+            {error}
+          </div>
+        )}
+        
+        {loading ? (
+          <div className="text-center py-8">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-indigo-600 border-r-transparent"></div>
+            <p className="mt-2 text-gray-600">
+              {language === 'english' ? 'Loading your readings...' : 'आपके पठन लोड हो रहे हैं...'}
+            </p>
+          </div>
+        ) : savedResults.length > 0 ? (
           <div className="space-y-4">
             {savedResults.map((item) => (
               <div 
                 key={item.id} 
-                className="border border-gray-200 rounded-lg p-4 hover:bg-indigo-50 transition-colors cursor-pointer"
-                onClick={() => handleViewResult(item.result)}
+                className="border border-gray-200 rounded-lg p-4 hover:bg-indigo-50 transition-colors"
               >
                 <div className="flex justify-between items-center">
-                  <div>
+                  <div className="cursor-pointer" onClick={() => handleViewResult(item.result)}>
                     <h4 className="font-medium text-gray-800">{item.name}</h4>
                     <p className="text-sm text-gray-500">{item.date}</p>
                   </div>
-                  <div className="flex space-x-2">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                      {language === 'english' ? 'Destiny: ' : 'भाग्य: '}{item.result.destinyNumber}
-                    </span>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                      {language === 'english' ? 'Life Path: ' : 'जीवन पथ: '}{item.result.lifePathNumber}
-                    </span>
+                  <div className="flex items-center space-x-4">
+                    <div className="flex space-x-2">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                        {language === 'english' ? 'Destiny: ' : 'भाग्य: '}{item.result.destinyNumber}
+                      </span>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                        {language === 'english' ? 'Life Path: ' : 'जीवन पथ: '}{item.result.lifePathNumber}
+                      </span>
+                    </div>
+                    <button 
+                      onClick={() => handleDeleteReading(item.id)}
+                      className="text-red-500 hover:text-red-700 p-1"
+                      aria-label="Delete reading"
+                    >
+                      <Trash2 size={18} />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -103,12 +138,6 @@ const Dashboard: React.FC<DashboardProps> = ({ language }) => {
             <h3 className="text-xl font-semibold text-gray-800">
               {language === 'english' ? 'Reading Details' : 'पठन विवरण'}
             </h3>
-            <button className="flex items-center text-indigo-600 hover:text-indigo-800">
-              <Save size={18} className="mr-1" />
-              <span className="text-sm font-medium">
-                {language === 'english' ? 'Save to Profile' : 'प्रोफ़ाइल में सहेजें'}
-              </span>
-            </button>
           </div>
           <NumerologyResultDisplay result={selectedResult} language={language} />
         </div>

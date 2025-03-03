@@ -18,16 +18,16 @@ const Login: React.FC<LoginProps> = ({ language }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     try {
       setError('');
       setLoading(true);
       await login(email, password);
       navigate('/dashboard');
-    } catch (err) {
-      setError(language === 'english' 
-        ? 'Failed to log in. Please check your credentials.' 
-        : 'लॉग इन करने में विफल। कृपया अपने क्रेडेंशियल्स की जांच करें।');
+    } catch (err: any) {
+      setError(err.response?.data?.message || 
+        (language === 'english' 
+          ? 'Failed to log in' 
+          : 'लॉग इन करने में विफल'));
     } finally {
       setLoading(false);
     }
@@ -92,7 +92,7 @@ const Login: React.FC<LoginProps> = ({ language }) => {
 
       <div className="mt-6 text-center">
         <p className="text-sm text-gray-600">
-          {language === 'english' ? "Don't have an account?" : "खाता नहीं है?"}{' '}
+          {language === 'english' ? 'Don’t have an account?' : 'खाता नहीं है?'}{' '}
           <Link to="/signup" className="text-indigo-600 hover:text-indigo-800 font-medium">
             {language === 'english' ? 'Sign Up' : 'साइन अप करें'}
           </Link>

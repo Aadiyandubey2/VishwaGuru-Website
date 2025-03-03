@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Sparkles, LogOut, User } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Sparkles, LogOut, User, Settings } from 'lucide-react';
 import LanguageToggle from '../LanguageToggle';
 import { Language } from '../../types';
 import { useAuth } from '../../context/AuthContext';
@@ -13,6 +13,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ language, setLanguage }) => {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     try {
@@ -39,10 +40,31 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage }) => {
             
             {currentUser ? (
               <div className="flex items-center space-x-4">
-                <Link to="/dashboard" className="flex items-center text-gray-700 hover:text-indigo-600">
+                <Link 
+                  to="/dashboard" 
+                  className={`flex items-center ${
+                    location.pathname === '/dashboard' 
+                      ? 'text-indigo-600' 
+                      : 'text-gray-700 hover:text-indigo-600'
+                  }`}
+                >
                   <User size={18} className="mr-1" />
                   <span className="text-sm font-medium">
-                    {currentUser.displayName || (language === 'english' ? 'Profile' : 'प्रोफाइल')}
+                    {language === 'english' ? 'Dashboard' : 'डैशबोर्ड'}
+                  </span>
+                </Link>
+                
+                <Link 
+                  to="/profile" 
+                  className={`flex items-center ${
+                    location.pathname === '/profile' 
+                      ? 'text-indigo-600' 
+                      : 'text-gray-700 hover:text-indigo-600'
+                  }`}
+                >
+                  <Settings size={18} className="mr-1" />
+                  <span className="text-sm font-medium">
+                    {language === 'english' ? 'Settings' : 'सेटिंग्स'}
                   </span>
                 </Link>
                 

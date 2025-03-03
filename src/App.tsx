@@ -15,6 +15,7 @@ import { AuthProvider } from './context/AuthContext';
 import Login from './components/auth/Login';
 import Signup from './components/auth/Signup';
 import Dashboard from './components/dashboard/Dashboard';
+import ProfileSettings from './components/profile/ProfileSettings';
 import PrivateRoute from './components/PrivateRoute';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
@@ -123,6 +124,12 @@ function App() {
               <Route path="/dashboard" element={
                 <PrivateRoute>
                   <Dashboard language={language} />
+                </PrivateRoute>
+              } />
+              
+              <Route path="/profile" element={
+                <PrivateRoute>
+                  <ProfileSettings language={language} />
                 </PrivateRoute>
               } />
               
