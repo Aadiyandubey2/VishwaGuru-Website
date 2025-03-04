@@ -10,8 +10,11 @@ Frontend: HTML, JavaScript, TypeScript ,CSS(Nagaraju Sir supremacy🙏)
 Backend: Node.js(R.I.P. my sleep schedule)
 
 Deployment: Vercel(Gone very hard with this part)
+
 Authentication Database: MySQL(Thinking that 🤔 I know but done very poor execution)
-Server: Railway(For hosting MySQL server) 
+
+Server: Railway-Not working❌(For hosting MySQL server) 
+
 🚀 Features
 
 Numerology calculations for names, dates, and other inputs also added support for hindi language.
