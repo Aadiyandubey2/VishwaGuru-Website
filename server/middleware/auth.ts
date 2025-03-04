@@ -7,10 +7,8 @@ interface JwtPayload {
   email: string;
 }
 
-// Middleware to authenticate user from JWT token
 const auth = (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Get token from cookie or authorization header
     const token = req.cookies.token || req.header('Authorization')?.replace('Bearer ', '');
     
     if (!token) {
@@ -20,13 +18,11 @@ const auth = (req: Request, res: Response, next: NextFunction) => {
       });
     }
     
-    // Verify token
     const decoded = jwt.verify(
       token, 
       process.env.JWT_SECRET || 'fallback_secret'
     ) as JwtPayload;
     
-    // Attach user to request
     (req as any).user = {
       id: decoded.id,
       name: decoded.name,

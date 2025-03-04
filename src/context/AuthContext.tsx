@@ -28,10 +28,9 @@ export const useAuth = () => {
   return context;
 };
 
-// Local storage keys
+
 const USER_STORAGE_KEY = 'vishwaguru_user';
 
-// Local storage helpers
 const saveUserToLocalStorage = (user: User | null) => {
   if (user) {
     localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
@@ -58,32 +57,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Update local storage when user changes
   useEffect(() => {
     if (!loading) {
       saveUserToLocalStorage(currentUser);
     }
   }, [currentUser, loading]);
 
-  // Check if user is logged in on initial load
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
         setLoading(true);
         
-        // First try to get user from local storage
         const storedUser = getUserFromLocalStorage();
         if (storedUser) {
           setCurrentUser(storedUser);
         }
         
-        // Then try to validate with server
         const response = await api.get('/auth/me');
         if (response.data.success) {
           setCurrentUser(response.data.user);
         }
       } catch (error) {
-        // If server request fails, keep using local storage user
         console.log('Server authentication check failed, using local storage');
       } finally {
         setLoading(false);
@@ -93,7 +87,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     checkAuthStatus();
   }, []);
 
-  // Register a new user
   const signup = async (email: string, password: string, name: string) => {
     try {
       const response = await api.post('/auth/register', {
@@ -110,7 +103,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error: any) {
       console.log('Signup error:', error.message);
       
-      // Fallback for demo/development: create a mock user
       if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
         const mockUser = {
           id: Date.now(),
@@ -125,7 +117,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Login user
   const login = async (email: string, password: string) => {
     try {
       const response = await api.post('/auth/login', {
@@ -141,11 +132,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error: any) {
       console.log('Login error:', error.message);
       
-      // Fallback for demo/development: create a mock user
       if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
         const mockUser = {
           id: Date.now(),
-          name: email.split('@')[0], // Use part of email as name
+          name: email.split('@')[0], 
           email
         };
         setCurrentUser(mockUser);
@@ -156,19 +146,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Logout user
   const logout = async () => {
     try {
       await api.post('/auth/logout');
       setCurrentUser(null);
     } catch (error: any) {
       console.log('Logout error:', error.message);
-      // Even if server logout fails, clear the user from state
       setCurrentUser(null);
     }
   };
 
-  // Update user profile
   const updateProfile = async (name: string) => {
     try {
       const response = await api.put('/users/profile', { name });
@@ -181,7 +168,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error: any) {
       console.log('Update profile error:', error.message);
       
-      // Fallback: update locally
       if (currentUser) {
         setCurrentUser({ ...currentUser, name });
       }
@@ -190,7 +176,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Change password
   const changePassword = async (currentPassword: string, newPassword: string) => {
     try {
       const response = await api.put('/users/password', {
@@ -204,7 +189,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error: any) {
       console.log('Change password error:', error.message);
       
-      // In development mode, just pretend it worked
       if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
         return;
       }
@@ -213,7 +197,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Delete account
   const deleteAccount = async () => {
     try {
       const response = await api.delete('/users/account');
@@ -226,7 +209,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error: any) {
       console.log('Delete account error:', error.message);
       
-      // Even if server request fails, clear the user from state
       setCurrentUser(null);
       
       throw error;

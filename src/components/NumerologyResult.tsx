@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { NumerologyResult as NumerologyResultType, Language } from '../types';
 import { destinyInterpretations, lifePathInterpretations, getInterpretation } from '../data/interpretations';
 
@@ -7,20 +8,33 @@ interface NumerologyResultProps {
   language: Language;
 }
 
-const NumberCard: React.FC<{
-  title: string;
-  number: number;
-  description: string;
-  className?: string;
-}> = ({ title, number, description, className = '' }) => {
+const fadeIn = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+};
+
+const NumberCard: React.FC<{ title: string; number: number; description: string; className?: string; }> = ({ title, number, description, className = '' }) => {
+  const [isTouched, setIsTouched] = useState(false);
+
   return (
-    <div className={`bg-white p-6 rounded-lg shadow-md ${className}`}>
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <div className="flex items-center justify-center mb-4">
-        <span className="text-4xl font-bold text-indigo-600">{number}</span>
+    <motion.div 
+      className={`relative bg-white p-3 rounded-md shadow-md border-2 transition-all transform hover:scale-105 ${isTouched ? 'border-red-500 text-red-700 font-bold' : ''} ${className}`}
+      initial="hidden"
+      animate="visible"
+      variants={fadeIn}
+      onTouchStart={() => setIsTouched(true)}
+      onTouchEnd={() => setIsTouched(false)}
+    >
+      <motion.div
+        className="absolute inset-0 rounded-md border-2 animate-gradient-border"
+        style={{ borderImage: 'linear-gradient(90deg, red, purple) 1' }}
+      ></motion.div>
+      <h3 className="text-md font-semibold mb-1 relative z-10">{title}</h3>
+      <div className="flex items-center justify-center mb-2 relative z-10">
+        <motion.span className="text-2xl font-bold text-indigo-600">{number}</motion.span>
       </div>
-      <p className="text-gray-700">{description}</p>
-    </div>
+      <p className="text-gray-700 text-sm relative z-10">{description}</p>
+    </motion.div>
   );
 };
 
@@ -31,100 +45,52 @@ const NumerologyResultDisplay: React.FC<NumerologyResultProps> = ({ result, lang
   const lifePathInterp = getInterpretation(result.lifePathNumber, lifePathInterpretations);
 
   return (
-    <div className="space-y-8">
-      <div className="bg-indigo-50 p-6 rounded-lg border border-indigo-100">
-        <h2 className="text-xl font-bold text-indigo-800 mb-4">
+    <motion.div className="space-y-6" initial="hidden" animate="visible" variants={fadeIn}>
+      <motion.div className="bg-indigo-50 p-4 rounded-lg border border-indigo-100" variants={fadeIn}>
+        <h2 className="text-lg font-bold text-indigo-800 mb-3">
           {language === 'english' ? 'Your Numerology Profile' : 'आपका अंकशास्त्र प्रोफ़ाइल'}
         </h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div className="bg-white p-4 rounded-md shadow-sm">
-            <span className="text-sm text-gray-500">
-              {language === 'english' ? 'Destiny Number' : 'भाग्य अंक'}
-            </span>
-            <div className="flex items-center mt-1">
-              <span className="text-3xl font-bold text-indigo-600">{result.destinyNumber}</span>
-              <span className="ml-2 text-indigo-800 font-medium">
-                {language === 'english' 
-                  ? destinyInterp?.englishTitle 
-                  : destinyInterp?.hindiTitle}
-              </span>
-            </div>
-          </div>
-          
-          <div className="bg-white p-4 rounded-md shadow-sm">
-            <span className="text-sm text-gray-500">
-              {language === 'english' ? 'Life Path Number' : 'जीवन पथ अंक'}
-            </span>
-            <div className="flex items-center mt-1">
-              <span className="text-3xl font-bold text-indigo-600">{result.lifePathNumber}</span>
-              <span className="ml-2 text-indigo-800 font-medium">
-                {language === 'english' 
-                  ? lifePathInterp?.englishTitle 
-                  : lifePathInterp?.hindiTitle}
-              </span>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+          <NumberCard 
+            title={language === 'english' ? 'Destiny Number' : 'भाग्य अंक'} 
+            number={result.destinyNumber} 
+            description={language === 'english' ? destinyInterp?.englishTitle : destinyInterp?.hindiTitle} 
+          />
+          <NumberCard 
+            title={language === 'english' ? 'Life Path Number' : 'जीवन पथ अंक'} 
+            number={result.lifePathNumber} 
+            description={language === 'english' ? lifePathInterp?.englishTitle : lifePathInterp?.hindiTitle} 
+          />
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white p-4 rounded-md shadow-sm">
-            <span className="text-sm text-gray-500">
-              {language === 'english' ? 'Soul Urge Number' : 'आत्मा की इच्छा अंक'}
-            </span>
-            <div className="flex items-center mt-1">
-              <span className="text-2xl font-bold text-indigo-600">{result.soulUrgeNumber}</span>
-            </div>
-          </div>
-          
-          <div className="bg-white p-4 rounded-md shadow-sm">
-            <span className="text-sm text-gray-500">
-              {language === 'english' ? 'Personality Number' : 'व्यक्तित्व अंक'}
-            </span>
-            <div className="flex items-center mt-1">
-              <span className="text-2xl font-bold text-indigo-600">{result.personalityNumber}</span>
-            </div>
-          </div>
-          
-          <div className="bg-white p-4 rounded-md shadow-sm">
-            <span className="text-sm text-gray-500">
-              {language === 'english' ? 'Birthday Number' : 'जन्मदिन अंक'}
-            </span>
-            <div className="flex items-center mt-1">
-              <span className="text-2xl font-bold text-indigo-600">{result.birthdayNumber}</span>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <NumberCard title={language === 'english' ? 'Soul Urge Number' : 'आत्मा की इच्छा अंक'} number={result.soulUrgeNumber} description="" />
+          <NumberCard title={language === 'english' ? 'Personality Number' : 'व्यक्तित्व अंक'} number={result.personalityNumber} description="" />
+          <NumberCard title={language === 'english' ? 'Birthday Number' : 'जन्मदिन अंक'} number={result.birthdayNumber} description="" />
         </div>
-      </div>
+      </motion.div>
 
-      <div className="space-y-6">
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold mb-3 text-indigo-800">
+      <motion.div className="space-y-4" variants={fadeIn}>
+        <motion.div className="bg-white p-4 rounded-lg shadow-md" variants={fadeIn}>
+          <h3 className="text-md font-semibold mb-2 text-indigo-800">
             {language === 'english' 
               ? `Destiny Number ${result.destinyNumber}: ${destinyInterp?.englishTitle}` 
               : `भाग्य अंक ${result.destinyNumber}: ${destinyInterp?.hindiTitle}`}
           </h3>
-          <p className="text-gray-700">
-            {language === 'english' 
-              ? destinyInterp?.englishDescription 
-              : destinyInterp?.hindiDescription}
-          </p>
-        </div>
+          <p className="text-gray-700 text-sm">{language === 'english' ? destinyInterp?.englishDescription : destinyInterp?.hindiDescription}</p>
+        </motion.div>
 
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold mb-3 text-indigo-800">
+        <motion.div className="bg-white p-4 rounded-lg shadow-md" variants={fadeIn}>
+          <h3 className="text-md font-semibold mb-2 text-indigo-800">
             {language === 'english' 
               ? `Life Path Number ${result.lifePathNumber}: ${lifePathInterp?.englishTitle}` 
               : `जीवन पथ अंक ${result.lifePathNumber}: ${lifePathInterp?.hindiTitle}`}
           </h3>
-          <p className="text-gray-700">
-            {language === 'english' 
-              ? lifePathInterp?.englishDescription 
-              : lifePathInterp?.hindiDescription}
-          </p>
-        </div>
-      </div>
-    </div>
+          <p className="text-gray-700 text-sm">{language === 'english' ? lifePathInterp?.englishDescription : lifePathInterp?.hindiDescription}</p>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 };
 

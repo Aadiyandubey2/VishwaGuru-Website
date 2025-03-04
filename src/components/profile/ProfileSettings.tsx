@@ -66,7 +66,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ language }) => {
       setError('');
       setLoading(true);
       await deleteAccount();
-      // No need to set success message as user will be redirected
+     
     } catch (err) {
       setError(language === 'english' ? 'Failed to delete account' : 'खाता हटाने में विफल');
       setLoading(false);

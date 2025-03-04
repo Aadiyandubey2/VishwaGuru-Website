@@ -9,7 +9,6 @@ import {
   calculateBirthdayNumber 
 } from '../../src/utils/numerologyCalculator';
 
-// Save a numerology reading
 export const saveReading = async (req: Request, res: Response) => {
   try {
     const { name, birthdate } = req.body;
@@ -22,14 +21,12 @@ export const saveReading = async (req: Request, res: Response) => {
       });
     }
     
-    // Calculate numerology numbers
     const destinyNumber = calculateDestinyNumber(name);
     const soulUrgeNumber = calculateSoulUrgeNumber(name);
     const personalityNumber = calculatePersonalityNumber(name);
     const lifePathNumber = calculateLifePathNumber(birthdate);
     const birthdayNumber = calculateBirthdayNumber(birthdate);
     
-    // Save reading to database
     const [result] = await pool.query<ResultSetHeader>(
       `INSERT INTO numerology_readings 
        (user_id, name, birthdate, destiny_number, soul_urge_number, personality_number, life_path_number, birthday_number) 
@@ -60,7 +57,6 @@ export const saveReading = async (req: Request, res: Response) => {
   }
 };
 
-// Get all readings for a user
 export const getUserReadings = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
@@ -72,13 +68,11 @@ export const getUserReadings = async (req: Request, res: Response) => {
       });
     }
     
-    // Get readings from database
     const [readings] = await pool.query<RowDataPacket[]>(
       `SELECT * FROM numerology_readings WHERE user_id = ? ORDER BY created_at DESC`,
       [user.id]
     );
     
-    // Format readings for response
     const formattedReadings = readings.map(reading => ({
       id: reading.id,
       name: reading.name,
@@ -106,7 +100,6 @@ export const getUserReadings = async (req: Request, res: Response) => {
   }
 };
 
-// Delete a reading
 export const deleteReading = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -119,7 +112,6 @@ export const deleteReading = async (req: Request, res: Response) => {
       });
     }
     
-    // Check if reading exists and belongs to user
     const [readings] = await pool.query<RowDataPacket[]>(
       'SELECT * FROM numerology_readings WHERE id = ? AND user_id = ?',
       [id, user.id]
@@ -132,7 +124,6 @@ export const deleteReading = async (req: Request, res: Response) => {
       });
     }
     
-    // Delete reading
     await pool.query(
       'DELETE FROM numerology_readings WHERE id = ?',
       [id]

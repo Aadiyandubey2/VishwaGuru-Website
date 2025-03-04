@@ -1,19 +1,17 @@
 import axios from 'axios';
 
-// Create API instance with proper configuration
+
 export const api = axios.create({
   baseURL: 'http://localhost:5000/api',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json'
   },
-  timeout: 10000 // 10 seconds timeout
+  timeout: 10000 
 });
 
-// Add request interceptor
 api.interceptors.request.use(
   (config) => {
-    // You can modify request config here if needed
     return config;
   },
   (error) => {
@@ -21,27 +19,20 @@ api.interceptors.request.use(
   }
 );
 
-// Add response interceptor for error handling
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Handle common errors
     if (error.response) {
-      // Server responded with error status
       console.error('API Error:', error.response.data);
       
-      // Handle authentication errors
       if (error.response.status === 401) {
-        // Redirect to login if not authenticated
         if (window.location.pathname !== '/login') {
           window.location.href = '/login';
         }
       }
     } else if (error.request) {
-      // Request made but no response received
       console.log('No response received - server may not be running');
     } else {
-      // Error setting up request
       console.error('Request error:', error.message);
     }
     
@@ -49,7 +40,6 @@ api.interceptors.response.use(
   }
 );
 
-// Fallback to local storage if server is unavailable
 const getLocalStorageReadings = () => {
   try {
     const readings = localStorage.getItem('numerologyReadings');
@@ -68,9 +58,7 @@ const saveLocalStorageReadings = (readings) => {
   }
 };
 
-// Numerology service functions
 export const numerologyService = {
-  // Save a numerology reading
   saveReading: async (name: string, birthdate: string) => {
     try {
       const response = await api.post('/numerology/readings', { name, birthdate });
@@ -78,7 +66,6 @@ export const numerologyService = {
     } catch (error) {
       console.error('Error saving reading:', error);
       
-      // Fallback to local storage
       try {
         const readings = getLocalStorageReadings();
         const newReading = {
@@ -86,7 +73,7 @@ export const numerologyService = {
           name,
           date: birthdate,
           result: {
-            destinyNumber: 0, // These would be calculated properly in a real app
+            destinyNumber: 0, 
             soulUrgeNumber: 0,
             personalityNumber: 0,
             lifePathNumber: 0,
@@ -105,7 +92,6 @@ export const numerologyService = {
     }
   },
   
-  // Get all readings for current user
   getUserReadings: async () => {
     try {
       const response = await api.get('/numerology/readings');
@@ -113,12 +99,10 @@ export const numerologyService = {
     } catch (error) {
       console.error('Error fetching readings:', error);
       
-      // Fallback to local storage
       return getLocalStorageReadings();
     }
   },
   
-  // Delete a reading
   deleteReading: async (id: string) => {
     try {
       const response = await api.delete(`/numerology/readings/${id}`);
@@ -126,7 +110,6 @@ export const numerologyService = {
     } catch (error) {
       console.error('Error deleting reading:', error);
       
-      // Fallback to local storage
       try {
         const readings = getLocalStorageReadings();
         const updatedReadings = readings.filter(reading => reading.id !== id);

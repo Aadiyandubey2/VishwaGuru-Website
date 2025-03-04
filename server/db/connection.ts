@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Database connection configuration
 const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
@@ -11,13 +10,10 @@ const dbConfig = {
   database: process.env.DB_NAME || 'vishwaguru_db'
 };
 
-// Create a connection pool
 const pool = mysql.createPool(dbConfig);
 
-// Initialize database tables
 export const createConnection = async () => {
   try {
-    // Create database if it doesn't exist
     const connection = await mysql.createConnection({
       host: dbConfig.host,
       user: dbConfig.user,
@@ -27,7 +23,6 @@ export const createConnection = async () => {
     await connection.query(`CREATE DATABASE IF NOT EXISTS ${dbConfig.database}`);
     await connection.end();
     
-    // Create users table
     await pool.query(`
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -39,7 +34,6 @@ export const createConnection = async () => {
       )
     `);
     
-    // Create numerology_readings table
     await pool.query(`
       CREATE TABLE IF NOT EXISTS numerology_readings (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -64,5 +58,4 @@ export const createConnection = async () => {
   }
 };
 
-// Export the pool for use in other modules
 export default pool;

@@ -3,7 +3,6 @@ import bcrypt from 'bcryptjs';
 import pool from '../db/connection';
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
 
-// Update user profile
 export const updateProfile = async (req: Request, res: Response) => {
   try {
     const { name } = req.body;
@@ -16,7 +15,6 @@ export const updateProfile = async (req: Request, res: Response) => {
       });
     }
     
-    // Update user in database
     await pool.query<ResultSetHeader>(
       'UPDATE users SET name = ? WHERE id = ?',
       [name, user.id]
@@ -39,7 +37,6 @@ export const updateProfile = async (req: Request, res: Response) => {
   }
 };
 
-// Change password
 export const changePassword = async (req: Request, res: Response) => {
   try {
     const { currentPassword, newPassword } = req.body;
@@ -52,7 +49,6 @@ export const changePassword = async (req: Request, res: Response) => {
       });
     }
     
-    // Get user with password from database
     const [users] = await pool.query<RowDataPacket[]>(
       'SELECT * FROM users WHERE id = ?',
       [user.id]
@@ -67,7 +63,6 @@ export const changePassword = async (req: Request, res: Response) => {
     
     const dbUser = users[0];
     
-    // Verify current password
     const isPasswordValid = await bcrypt.compare(currentPassword, dbUser.password);
     
     if (!isPasswordValid) {
@@ -77,11 +72,9 @@ export const changePassword = async (req: Request, res: Response) => {
       });
     }
     
-    // Hash new password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
     
-    // Update password in database
     await pool.query<ResultSetHeader>(
       'UPDATE users SET password = ? WHERE id = ?',
       [hashedPassword, user.id]
@@ -100,7 +93,6 @@ export const changePassword = async (req: Request, res: Response) => {
   }
 };
 
-// Delete user account
 export const deleteAccount = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
@@ -112,13 +104,11 @@ export const deleteAccount = async (req: Request, res: Response) => {
       });
     }
     
-    // Delete user from database (cascade will delete readings)
     await pool.query(
       'DELETE FROM users WHERE id = ?',
       [user.id]
     );
     
-    // Clear auth cookie
     res.clearCookie('token');
     
     return res.status(200).json({
