@@ -48,16 +48,22 @@ Dynamic UI with CSS. Blue font used because its my favourite.
 📌 How to Run Locally(Please test and give your reaction)
 
 1. Clone the repository
-git clone https://github.com/Aadiyandubey2/Numerology-Website.git
+
+git clone
+ https://github.com/Aadiyandubey2/Numerology-Website.git
+
 cd Numerology-Website
 
 2. Install dependencies
+
 npm install
 
 3. Run the project
+
 npm run dev
 
 4. Build for production
+
 npm run build
 
 Insta ID:- aadiyan_dubey0
