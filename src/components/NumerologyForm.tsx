@@ -14,6 +14,8 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
   const [birthdate, setBirthdate] = useState('');
   const [errors, setErrors] = useState({ name: '', birthdate: '' });
   const [saveToProfile, setSaveToProfile] = useState(false);
+  const [savingError, setSavingError] = useState('');
+  const [saving, setSaving] = useState(false);
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
@@ -37,6 +39,8 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSavingError('');
+    
     if (validateForm()) {
       // Calculate numerology
       onCalculate(name, birthdate);
@@ -44,9 +48,15 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
       // Save to profile if user is logged in and option is selected
       if (currentUser && saveToProfile) {
         try {
+          setSaving(true);
           await numerologyService.saveReading(name, birthdate);
+          setSaving(false);
         } catch (error) {
           console.error('Error saving reading:', error);
+          setSavingError(language === 'english' 
+            ? 'Failed to save reading to your profile. Please try again.' 
+            : 'आपके प्रोफ़ाइल में पठन सहेजने में विफल। कृपया पुनः प्रयास करें।');
+          setSaving(false);
         }
       }
     }
@@ -83,6 +93,12 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
         {errors.birthdate && <p className="mt-1 text-sm text-red-600">{errors.birthdate}</p>}
       </div>
 
+      {savingError && (
+        <div className="bg-red-50 text-red-600 p-3 rounded-md">
+          {savingError}
+        </div>
+      )}
+
       {currentUser && (
         <div className="flex items-center">
           <input
@@ -118,9 +134,12 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
 
       <button
         type="submit"
-        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        disabled={saving}
+        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
       >
-        {language === 'english' ? 'Calculate Numerology' : 'अंकशास्त्र की गणना करें'}
+        {saving 
+          ? (language === 'english' ? 'Saving...' : 'सहेज रहा है...') 
+          : (language === 'english' ? 'Calculate Numerology' : 'अंकशास्त्र की गणना करें')}
       </button>
     </form>
   );

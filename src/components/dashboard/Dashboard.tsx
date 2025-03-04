@@ -22,13 +22,15 @@ const Dashboard: React.FC<DashboardProps> = ({ language }) => {
   const [selectedResult, setSelectedResult] = useState<NumerologyResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchReadings = async () => {
       try {
         setLoading(true);
+        setError(null);
         const readings = await numerologyService.getUserReadings();
-        setSavedResults(readings);
+        setSavedResults(readings || []);
       } catch (err) {
         setError(language === 'english' 
           ? 'Failed to load your readings. Please try again later.' 
@@ -38,8 +40,13 @@ const Dashboard: React.FC<DashboardProps> = ({ language }) => {
       }
     };
 
-    fetchReadings();
-  }, [language]);
+    if (currentUser) {
+      fetchReadings();
+    } else {
+      setLoading(false);
+      setSavedResults([]);
+    }
+  }, [language, currentUser]);
 
   const handleViewResult = (result: NumerologyResult) => {
     setSelectedResult(result);
@@ -47,6 +54,7 @@ const Dashboard: React.FC<DashboardProps> = ({ language }) => {
 
   const handleDeleteReading = async (id: string) => {
     try {
+      setDeleting(id);
       await numerologyService.deleteReading(id);
       setSavedResults(prev => prev.filter(reading => reading.id !== id));
       
@@ -58,8 +66,24 @@ const Dashboard: React.FC<DashboardProps> = ({ language }) => {
       setError(language === 'english' 
         ? 'Failed to delete reading. Please try again.' 
         : 'पठन हटाने में विफल। कृपया पुनः प्रयास करें।');
+    } finally {
+      setDeleting(null);
     }
   };
+
+  if (!currentUser) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden p-8 mb-8 text-center">
+          <p className="text-lg text-gray-600">
+            {language === 'english' 
+              ? 'Please log in to view your dashboard.' 
+              : 'अपना डैशबोर्ड देखने के लिए कृपया लॉग इन करें।'}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -113,10 +137,15 @@ const Dashboard: React.FC<DashboardProps> = ({ language }) => {
                     </div>
                     <button 
                       onClick={() => handleDeleteReading(item.id)}
-                      className="text-red-500 hover:text-red-700 p-1"
+                      disabled={deleting === item.id}
+                      className="text-red-500 hover:text-red-700 p-1 disabled:opacity-50"
                       aria-label="Delete reading"
                     >
-                      <Trash2 size={18} />
+                      {deleting === item.id ? (
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-red-600 border-r-transparent"></div>
+                      ) : (
+                        <Trash2 size={18} />
+                      )}
                     </button>
                   </div>
                 </div>
