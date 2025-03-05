@@ -1,14 +1,10 @@
 import { Request, Response } from 'express';
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import pool from '../db/connection';
-import { RowDataPacket, ResultSetHeader } from 'mysql2';
-
+import { User } from '../models/User';
 
 export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
-    
     
     if (!name || !email || !password) {
       return res.status(400).json({ 
@@ -17,48 +13,37 @@ export const register = async (req: Request, res: Response) => {
       });
     }
     
-  
-    const [existingUsers] = await pool.query<RowDataPacket[]>(
-      'SELECT * FROM users WHERE email = ?', 
-      [email]
-    );
+    const existingUser = await User.findOne({ email });
     
-    if (existingUsers.length > 0) {
+    if (existingUser) {
       return res.status(400).json({ 
         success: false, 
         message: 'User with this email already exists' 
       });
     }
     
-  
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const user = new User({ name, email, password });
+    await user.save();
     
-    const [result] = await pool.query<ResultSetHeader>(
-      'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
-      [name, email, hashedPassword]
-    );
-    
-  
     const token = jwt.sign(
-      { id: result.insertId, name, email },
+      { id: user._id, name, email },
       process.env.JWT_SECRET || 'fallback_secret',
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
-   
+    
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 24 * 60 * 60 * 1000 
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
     
     return res.status(201).json({
       success: true,
       message: 'User registered successfully',
       user: {
-        id: result.insertId,
-        name,
-        email
+        id: user._id,
+        name: user.name,
+        email: user.email
       },
       token
     });
@@ -82,22 +67,16 @@ export const login = async (req: Request, res: Response) => {
       });
     }
     
-    const [users] = await pool.query<RowDataPacket[]>(
-      'SELECT * FROM users WHERE email = ?', 
-      [email]
-    );
+    const user = await User.findOne({ email });
     
-    if (users.length === 0) {
+    if (!user) {
       return res.status(401).json({ 
         success: false, 
         message: 'Invalid credentials' 
       });
     }
     
-    const user = users[0];
-    
-    // Verify password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await user.comparePassword(password);
     
     if (!isPasswordValid) {
       return res.status(401).json({ 
@@ -107,7 +86,7 @@ export const login = async (req: Request, res: Response) => {
     }
     
     const token = jwt.sign(
-      { id: user.id, name: user.name, email: user.email },
+      { id: user._id, name: user.name, email: user.email },
       process.env.JWT_SECRET || 'fallback_secret',
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
@@ -115,14 +94,14 @@ export const login = async (req: Request, res: Response) => {
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 24 * 60 * 60 * 1000 
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
     
     return res.status(200).json({
       success: true,
       message: 'Login successful',
       user: {
-        id: user.id,
+        id: user._id,
         name: user.name,
         email: user.email
       },

@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
-import pool from '../db/connection';
-import { RowDataPacket, ResultSetHeader } from 'mysql2';
+import { NumerologyReading } from '../models/NumerologyReading';
 import { 
   calculateDestinyNumber, 
   calculateSoulUrgeNumber, 
@@ -27,18 +26,24 @@ export const saveReading = async (req: Request, res: Response) => {
     const lifePathNumber = calculateLifePathNumber(birthdate);
     const birthdayNumber = calculateBirthdayNumber(birthdate);
     
-    const [result] = await pool.query<ResultSetHeader>(
-      `INSERT INTO numerology_readings 
-       (user_id, name, birthdate, destiny_number, soul_urge_number, personality_number, life_path_number, birthday_number) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [user.id, name, birthdate, destinyNumber, soulUrgeNumber, personalityNumber, lifePathNumber, birthdayNumber]
-    );
+    const reading = new NumerologyReading({
+      userId: user.id,
+      name,
+      birthdate,
+      destinyNumber,
+      soulUrgeNumber,
+      personalityNumber,
+      lifePathNumber,
+      birthdayNumber
+    });
+    
+    await reading.save();
     
     return res.status(201).json({
       success: true,
       message: 'Reading saved successfully',
       reading: {
-        id: result.insertId,
+        id: reading._id,
         name,
         birthdate,
         destinyNumber,
@@ -68,23 +73,21 @@ export const getUserReadings = async (req: Request, res: Response) => {
       });
     }
     
-    const [readings] = await pool.query<RowDataPacket[]>(
-      `SELECT * FROM numerology_readings WHERE user_id = ? ORDER BY created_at DESC`,
-      [user.id]
-    );
+    const readings = await NumerologyReading.find({ userId: user.id })
+      .sort({ createdAt: -1 });
     
     const formattedReadings = readings.map(reading => ({
-      id: reading.id,
+      id: reading._id,
       name: reading.name,
       date: new Date(reading.birthdate).toISOString().split('T')[0],
       result: {
-        destinyNumber: reading.destiny_number,
-        soulUrgeNumber: reading.soul_urge_number,
-        personalityNumber: reading.personality_number,
-        lifePathNumber: reading.life_path_number,
-        birthdayNumber: reading.birthday_number
+        destinyNumber: reading.destinyNumber,
+        soulUrgeNumber: reading.soulUrgeNumber,
+        personalityNumber: reading.personalityNumber,
+        lifePathNumber: reading.lifePathNumber,
+        birthdayNumber: reading.birthdayNumber
       },
-      createdAt: reading.created_at
+      createdAt: reading.createdAt
     }));
     
     return res.status(200).json({
@@ -112,22 +115,19 @@ export const deleteReading = async (req: Request, res: Response) => {
       });
     }
     
-    const [readings] = await pool.query<RowDataPacket[]>(
-      'SELECT * FROM numerology_readings WHERE id = ? AND user_id = ?',
-      [id, user.id]
-    );
+    const reading = await NumerologyReading.findOne({
+      _id: id,
+      userId: user.id
+    });
     
-    if (readings.length === 0) {
+    if (!reading) {
       return res.status(404).json({
         success: false,
         message: 'Reading not found or not authorized'
       });
     }
     
-    await pool.query(
-      'DELETE FROM numerology_readings WHERE id = ?',
-      [id]
-    );
+    await reading.deleteOne();
     
     return res.status(200).json({
       success: true,
