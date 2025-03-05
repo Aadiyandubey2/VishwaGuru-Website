@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
-import { connectDB } from './db/connection';
+import { createConnection } from './db/connection';
 import authRoutes from './routes/auth';
 import userRoutes from './routes/user';
 import numerologyRoutes from './routes/numerology';
@@ -29,8 +29,8 @@ app.get('/health', (req, res) => {
 
 const startServer = async () => {
   try {
-    await connectDB();
-    console.log('Connected to MongoDB database');
+    await createConnection();
+    console.log('Connected to MySQL database');
     
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
@@ -43,6 +43,3 @@ const startServer = async () => {
 };
 
 startServer();
-
-// For Vercel deployment
-export default app;
