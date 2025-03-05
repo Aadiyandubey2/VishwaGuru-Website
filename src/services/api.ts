@@ -1,10 +1,7 @@
 import axios from 'axios';
 
-// Create axios instance with proper base URL
 export const api = axios.create({
-  baseURL: import.meta.env.DEV 
-    ? 'http://localhost:5000/api'  // Development
-    : '/api',                      // Production (relative to current domain)
+  baseURL: 'https://numerology-website-xi.vercel.app/api',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json'
@@ -12,7 +9,6 @@ export const api = axios.create({
   timeout: 10000 
 });
 
-// Request interceptor
 api.interceptors.request.use(
   (config) => {
     return config;
@@ -23,7 +19,6 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -31,7 +26,6 @@ api.interceptors.response.use(
       console.error('API Error:', error.response.data);
       
       if (error.response.status === 401) {
-        // Only redirect if not already on login page
         if (window.location.pathname !== '/login') {
           window.location.href = '/login';
         }
@@ -55,7 +49,6 @@ api.interceptors.response.use(
   }
 );
 
-// Helper function to safely handle localStorage operations
 const localStorageHelper = {
   getItem: (key: string) => {
     try {
@@ -84,7 +77,6 @@ const localStorageHelper = {
   }
 };
 
-// Numerology service with proper error handling
 export const numerologyService = {
   saveReading: async (name: string, birthdate: string) => {
     try {
@@ -92,28 +84,6 @@ export const numerologyService = {
       return response.data;
     } catch (error: any) {
       console.error('Error saving reading:', error);
-      
-      // Only use fallback in development
-      if (import.meta.env.DEV) {
-        const readings = localStorageHelper.getItem('numerologyReadings') || [];
-        const newReading = {
-          id: Date.now().toString(),
-          name,
-          date: birthdate,
-          result: {
-            destinyNumber: Math.floor(Math.random() * 9) + 1,
-            soulUrgeNumber: Math.floor(Math.random() * 9) + 1,
-            personalityNumber: Math.floor(Math.random() * 9) + 1,
-            lifePathNumber: Math.floor(Math.random() * 9) + 1,
-            birthdayNumber: Math.floor(Math.random() * 9) + 1
-          },
-          createdAt: new Date().toISOString()
-        };
-        readings.push(newReading);
-        localStorageHelper.setItem('numerologyReadings', readings);
-        return { success: true, reading: newReading };
-      }
-      
       throw error;
     }
   },
@@ -124,12 +94,6 @@ export const numerologyService = {
       return response.data.readings;
     } catch (error: any) {
       console.error('Error fetching readings:', error);
-      
-      // Only use fallback in development
-      if (import.meta.env.DEV) {
-        return localStorageHelper.getItem('numerologyReadings') || [];
-      }
-      
       throw error;
     }
   },
@@ -140,15 +104,6 @@ export const numerologyService = {
       return response.data;
     } catch (error: any) {
       console.error('Error deleting reading:', error);
-      
-      // Only use fallback in development
-      if (import.meta.env.DEV) {
-        const readings = localStorageHelper.getItem('numerologyReadings') || [];
-        const updatedReadings = readings.filter((reading: any) => reading.id !== id);
-        localStorageHelper.setItem('numerologyReadings', updatedReadings);
-        return { success: true };
-      }
-      
       throw error;
     }
   }
