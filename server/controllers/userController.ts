@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import { User } from '../models/User';
-import { NumerologyReading } from '../models/NumerologyReading';
+import pool from '../db/connection';
+import { RowDataPacket, ResultSetHeader } from 'mysql2';
 
 export const updateProfile = async (req: Request, res: Response) => {
   try {
@@ -15,26 +15,17 @@ export const updateProfile = async (req: Request, res: Response) => {
       });
     }
     
-    const updatedUser = await User.findByIdAndUpdate(
-      user.id,
-      { name },
-      { new: true }
+    await pool.query<ResultSetHeader>(
+      'UPDATE users SET name = ? WHERE id = ?',
+      [name, user.id]
     );
-    
-    if (!updatedUser) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
-    }
     
     return res.status(200).json({
       success: true,
       message: 'Profile updated successfully',
       user: {
-        id: updatedUser._id,
-        name: updatedUser.name,
-        email: updatedUser.email
+        ...user,
+        name
       }
     });
   } catch (error) {
@@ -58,16 +49,21 @@ export const changePassword = async (req: Request, res: Response) => {
       });
     }
     
-    const dbUser = await User.findById(user.id);
+    const [users] = await pool.query<RowDataPacket[]>(
+      'SELECT * FROM users WHERE id = ?',
+      [user.id]
+    );
     
-    if (!dbUser) {
+    if (users.length === 0) {
       return res.status(404).json({
         success: false,
         message: 'User not found'
       });
     }
     
-    const isPasswordValid = await dbUser.comparePassword(currentPassword);
+    const dbUser = users[0];
+    
+    const isPasswordValid = await bcrypt.compare(currentPassword, dbUser.password);
     
     if (!isPasswordValid) {
       return res.status(401).json({
@@ -79,8 +75,10 @@ export const changePassword = async (req: Request, res: Response) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
     
-    dbUser.password = hashedPassword;
-    await dbUser.save();
+    await pool.query<ResultSetHeader>(
+      'UPDATE users SET password = ? WHERE id = ?',
+      [hashedPassword, user.id]
+    );
     
     return res.status(200).json({
       success: true,
@@ -106,11 +104,10 @@ export const deleteAccount = async (req: Request, res: Response) => {
       });
     }
     
-    // Delete all user's readings first
-    await NumerologyReading.deleteMany({ userId: user.id });
-    
-    // Delete the user
-    await User.findByIdAndDelete(user.id);
+    await pool.query(
+      'DELETE FROM users WHERE id = ?',
+      [user.id]
+    );
     
     res.clearCookie('token');
     

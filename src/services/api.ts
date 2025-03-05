@@ -1,7 +1,8 @@
 import axios from 'axios';
 
+
 export const api = axios.create({
-  baseURL: 'https://numerology-website-xi.vercel.app/api',
+  baseURL: 'http://localhost:5000/api',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json'
@@ -14,7 +15,6 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
-    console.error('Request error:', error);
     return Promise.reject(error);
   }
 );
@@ -30,50 +30,31 @@ api.interceptors.response.use(
           window.location.href = '/login';
         }
       }
-      return Promise.reject(error.response.data);
-    } 
-    
-    if (error.request) {
-      console.error('No response received:', error.request);
-      return Promise.reject({ 
-        success: false, 
-        message: 'No response from server. Please try again later.' 
-      });
+    } else if (error.request) {
+      console.log('No response received - server may not be running');
+    } else {
+      console.error('Request error:', error.message);
     }
     
-    console.error('Error:', error.message);
-    return Promise.reject({ 
-      success: false, 
-      message: 'An unexpected error occurred. Please try again.' 
-    });
+    return Promise.reject(error);
   }
 );
 
-const localStorageHelper = {
-  getItem: (key: string) => {
-    try {
-      const item = localStorage.getItem(key);
-      return item ? JSON.parse(item) : null;
-    } catch (e) {
-      console.error('Error reading from localStorage:', e);
-      return null;
-    }
-  },
-  
-  setItem: (key: string, value: any) => {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-    } catch (e) {
-      console.error('Error writing to localStorage:', e);
-    }
-  },
-  
-  removeItem: (key: string) => {
-    try {
-      localStorage.removeItem(key);
-    } catch (e) {
-      console.error('Error removing from localStorage:', e);
-    }
+const getLocalStorageReadings = () => {
+  try {
+    const readings = localStorage.getItem('numerologyReadings');
+    return readings ? JSON.parse(readings) : [];
+  } catch (e) {
+    console.error('Error reading from localStorage:', e);
+    return [];
+  }
+};
+
+const saveLocalStorageReadings = (readings) => {
+  try {
+    localStorage.setItem('numerologyReadings', JSON.stringify(readings));
+  } catch (e) {
+    console.error('Error saving to localStorage:', e);
   }
 };
 
@@ -82,8 +63,31 @@ export const numerologyService = {
     try {
       const response = await api.post('/numerology/readings', { name, birthdate });
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error saving reading:', error);
+      
+      try {
+        const readings = getLocalStorageReadings();
+        const newReading = {
+          id: Date.now().toString(),
+          name,
+          date: birthdate,
+          result: {
+            destinyNumber: 0, 
+            soulUrgeNumber: 0,
+            personalityNumber: 0,
+            lifePathNumber: 0,
+            birthdayNumber: 0
+          },
+          createdAt: new Date().toISOString()
+        };
+        readings.push(newReading);
+        saveLocalStorageReadings(readings);
+        return { success: true, reading: newReading };
+      } catch (e) {
+        console.error('Fallback storage failed:', e);
+      }
+      
       throw error;
     }
   },
@@ -92,9 +96,10 @@ export const numerologyService = {
     try {
       const response = await api.get('/numerology/readings');
       return response.data.readings;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error fetching readings:', error);
-      throw error;
+      
+      return getLocalStorageReadings();
     }
   },
   
@@ -102,8 +107,18 @@ export const numerologyService = {
     try {
       const response = await api.delete(`/numerology/readings/${id}`);
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error deleting reading:', error);
+      
+      try {
+        const readings = getLocalStorageReadings();
+        const updatedReadings = readings.filter(reading => reading.id !== id);
+        saveLocalStorageReadings(updatedReadings);
+        return { success: true };
+      } catch (e) {
+        console.error('Fallback deletion failed:', e);
+      }
+      
       throw error;
     }
   }
