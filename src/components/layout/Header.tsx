@@ -25,7 +25,6 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage }) => {
     }
   };
 
-  // Animation variants for menu items
   const menuItemVariants = {
     hidden: { opacity: 0, x: 20 },
     visible: { 

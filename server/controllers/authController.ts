@@ -96,7 +96,6 @@ export const login = async (req: Request, res: Response) => {
     
     const user = users[0];
     
-    // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     
     if (!isPasswordValid) {

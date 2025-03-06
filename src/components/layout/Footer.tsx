@@ -59,7 +59,7 @@ const Footer: React.FC<FooterProps> = ({ language }) => {
       transition={{ duration: 0.6 }}
       className="relative text-blue-900 py-6 mt-16 overflow-hidden"
     >
-      {/* Animated Gradient Top Border */}
+      {}
       <motion.div 
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
@@ -115,7 +115,7 @@ const Footer: React.FC<FooterProps> = ({ language }) => {
         </div>
       </div>
       
-      {/* Animated Gradient Bottom Border */}
+      {}
       <motion.div 
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}

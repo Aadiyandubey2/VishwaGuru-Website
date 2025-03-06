@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { api } from '../services/api';
+import { authService } from '../services/api';
 
 interface User {
   id: number;
@@ -27,7 +27,6 @@ export const useAuth = () => {
   }
   return context;
 };
-
 
 const USER_STORAGE_KEY = 'vishwaguru_user';
 
@@ -73,9 +72,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setCurrentUser(storedUser);
         }
         
-        const response = await api.get('/auth/me');
-        if (response.data.success) {
-          setCurrentUser(response.data.user);
+        const response = await authService.getCurrentUser();
+        if (response.success && response.user) {
+          setCurrentUser(response.user);
         }
       } catch (error) {
         console.log('Server authentication check failed, using local storage');
@@ -89,128 +88,75 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signup = async (email: string, password: string, name: string) => {
     try {
-      const response = await api.post('/auth/register', {
-        email,
-        password,
-        name
-      });
-
-      if (response.data.success) {
-        setCurrentUser(response.data.user);
+      const response = await authService.register(email, password, name);
+      if (response.success) {
+        setCurrentUser(response.user);
       } else {
-        throw new Error(response.data.message || 'Registration failed');
+        throw new Error('Registration failed');
       }
-    } catch (error: any) {
-      console.log('Signup error:', error.message);
-      
-      if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-        const mockUser = {
-          id: Date.now(),
-          name,
-          email
-        };
-        setCurrentUser(mockUser);
-        return;
-      }
-      
+    } catch (error) {
+      console.error('Signup error:', error);
       throw error;
     }
   };
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await api.post('/auth/login', {
-        email,
-        password
-      });
-
-      if (response.data.success) {
-        setCurrentUser(response.data.user);
+      const response = await authService.login(email, password);
+      if (response.success) {
+        setCurrentUser(response.user);
       } else {
-        throw new Error(response.data.message || 'Login failed');
+        throw new Error('Login failed');
       }
-    } catch (error: any) {
-      console.log('Login error:', error.message);
-      
-      if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-        const mockUser = {
-          id: Date.now(),
-          name: email.split('@')[0], 
-          email
-        };
-        setCurrentUser(mockUser);
-        return;
-      }
-      
+    } catch (error) {
+      console.error('Login error:', error);
       throw error;
     }
   };
 
   const logout = async () => {
     try {
-      await api.post('/auth/logout');
+      await authService.logout();
       setCurrentUser(null);
-    } catch (error: any) {
-      console.log('Logout error:', error.message);
+    } catch (error) {
+      console.error('Logout error:', error);
       setCurrentUser(null);
     }
   };
 
   const updateProfile = async (name: string) => {
     try {
-      const response = await api.put('/users/profile', { name });
-      
-      if (response.data.success) {
-        setCurrentUser(prev => prev ? { ...prev, name } : null);
+      const response = await authService.updateProfile(name);
+      if (response.success) {
+        setCurrentUser(response.user);
       } else {
-        throw new Error(response.data.message || 'Profile update failed');
+        throw new Error('Profile update failed');
       }
-    } catch (error: any) {
-      console.log('Update profile error:', error.message);
-      
-      if (currentUser) {
-        setCurrentUser({ ...currentUser, name });
-      }
-      
+    } catch (error) {
+      console.error('Update profile error:', error);
       throw error;
     }
   };
 
   const changePassword = async (currentPassword: string, newPassword: string) => {
     try {
-      const response = await api.put('/users/password', {
-        currentPassword,
-        newPassword
-      });
-      
-      if (!response.data.success) {
-        throw new Error(response.data.message || 'Password change failed');
-      }
-    } catch (error: any) {
-      console.log('Change password error:', error.message);
-      
-      if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-        return;
-      }
-      
+      await authService.changePassword(newPassword);
+    } catch (error) {
+      console.error('Change password error:', error);
       throw error;
     }
   };
 
   const deleteAccount = async () => {
     try {
-      const response = await api.delete('/users/account');
-      
-      if (response.data.success) {
+      const response = await authService.deleteAccount();
+      if (response.success) {
         setCurrentUser(null);
       } else {
-        throw new Error(response.data.message || 'Account deletion failed');
+        throw new Error('Account deletion failed');
       }
-    } catch (error: any) {
-      console.log('Delete account error:', error.message);
-      
-      setCurrentUser(null);
-      
+    } catch (error) {
+      console.error('Delete account error:', error);
       throw error;
     }
   };

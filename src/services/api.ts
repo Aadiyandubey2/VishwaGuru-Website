@@ -1,124 +1,276 @@
-import axios from 'axios';
-
-
-export const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  timeout: 10000 
-});
-
-api.interceptors.request.use(
-  (config) => {
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response) {
-      console.error('API Error:', error.response.data);
-      
-      if (error.response.status === 401) {
-        if (window.location.pathname !== '/login') {
-          window.location.href = '/login';
-        }
-      }
-    } else if (error.request) {
-      console.log('No response received - server may not be running');
-    } else {
-      console.error('Request error:', error.message);
-    }
-    
-    return Promise.reject(error);
-  }
-);
-
-const getLocalStorageReadings = () => {
-  try {
-    const readings = localStorage.getItem('numerologyReadings');
-    return readings ? JSON.parse(readings) : [];
-  } catch (e) {
-    console.error('Error reading from localStorage:', e);
-    return [];
-  }
-};
-
-const saveLocalStorageReadings = (readings) => {
-  try {
-    localStorage.setItem('numerologyReadings', JSON.stringify(readings));
-  } catch (e) {
-    console.error('Error saving to localStorage:', e);
-  }
-};
+import { supabase } from '../lib/supabase';
+import { calculateDestinyNumber, calculateSoulUrgeNumber, calculatePersonalityNumber, calculateLifePathNumber, calculateBirthdayNumber } from '../utils/numerologyCalculator';
 
 export const numerologyService = {
   saveReading: async (name: string, birthdate: string) => {
     try {
-      const response = await api.post('/numerology/readings', { name, birthdate });
-      return response.data;
+      const user = supabase.auth.getUser();
+      if (!user) {
+        throw new Error('Not authenticated');
+      }
+
+      const reading = {
+        user_id: (await user).data.user?.id,
+        name,
+        birthdate,
+        destiny_number: calculateDestinyNumber(name),
+        soul_urge_number: calculateSoulUrgeNumber(name),
+        personality_number: calculatePersonalityNumber(name),
+        life_path_number: calculateLifePathNumber(birthdate),
+        birthday_number: calculateBirthdayNumber(birthdate)
+      };
+
+      const { data, error } = await supabase
+        .from('numerology_readings')
+        .insert([reading])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      return {
+        success: true,
+        reading: {
+          id: data.id,
+          name: data.name,
+          date: data.birthdate,
+          result: {
+            destinyNumber: data.destiny_number,
+            soulUrgeNumber: data.soul_urge_number,
+            personalityNumber: data.personality_number,
+            lifePathNumber: data.life_path_number,
+            birthdayNumber: data.birthday_number
+          }
+        }
+      };
     } catch (error) {
       console.error('Error saving reading:', error);
-      
-      try {
-        const readings = getLocalStorageReadings();
-        const newReading = {
-          id: Date.now().toString(),
-          name,
-          date: birthdate,
-          result: {
-            destinyNumber: 0, 
-            soulUrgeNumber: 0,
-            personalityNumber: 0,
-            lifePathNumber: 0,
-            birthdayNumber: 0
-          },
-          createdAt: new Date().toISOString()
-        };
-        readings.push(newReading);
-        saveLocalStorageReadings(readings);
-        return { success: true, reading: newReading };
-      } catch (e) {
-        console.error('Fallback storage failed:', e);
-      }
-      
       throw error;
     }
   },
   
   getUserReadings: async () => {
     try {
-      const response = await api.get('/numerology/readings');
-      return response.data.readings;
+      const { data, error } = await supabase
+        .from('numerology_readings')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      return data.map(reading => ({
+        id: reading.id,
+        name: reading.name,
+        date: reading.birthdate,
+        result: {
+          destinyNumber: reading.destiny_number,
+          soulUrgeNumber: reading.soul_urge_number,
+          personalityNumber: reading.personality_number,
+          lifePathNumber: reading.life_path_number,
+          birthdayNumber: reading.birthday_number
+        }
+      }));
     } catch (error) {
       console.error('Error fetching readings:', error);
-      
-      return getLocalStorageReadings();
+      throw error;
     }
   },
   
   deleteReading: async (id: string) => {
     try {
-      const response = await api.delete(`/numerology/readings/${id}`);
-      return response.data;
+      const { error } = await supabase
+        .from('numerology_readings')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      return { success: true };
     } catch (error) {
       console.error('Error deleting reading:', error);
-      
-      try {
-        const readings = getLocalStorageReadings();
-        const updatedReadings = readings.filter(reading => reading.id !== id);
-        saveLocalStorageReadings(updatedReadings);
-        return { success: true };
-      } catch (e) {
-        console.error('Fallback deletion failed:', e);
+      throw error;
+    }
+  }
+};
+
+export const authService = {
+  register: async (email: string, password: string, name: string) => {
+    try {
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password
+      });
+
+      if (authError) throw authError;
+
+      if (authData.user) {
+        const { error: profileError } = await supabase
+          .from('users')
+          .insert([{
+            id: authData.user.id,
+            name,
+            email
+          }]);
+
+        if (profileError) throw profileError;
+
+        return {
+          success: true,
+          user: {
+            id: authData.user.id,
+            name,
+            email
+          }
+        };
       }
+
+      throw new Error('Registration failed');
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    }
+  },
+
+  login: async (email: string, password: string) => {
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (authError) throw authError;
+
+      if (user) {
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('name')
+          .eq('id', user.id)
+          .single();
+
+        if (userError) throw userError;
+
+        return {
+          success: true,
+          user: {
+            id: user.id,
+            name: userData.name,
+            email: user.email
+          }
+        };
+      }
+
+      throw new Error('Login failed');
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
+  },
+
+  logout: async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      return { success: true };
+    } catch (error) {
+      console.error('Logout error:', error);
+      throw error;
+    }
+  },
+
+  getCurrentUser: async () => {
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
       
+      if (authError) throw authError;
+      
+      if (user) {
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('name')
+          .eq('id', user.id)
+          .single();
+
+        if (userError) throw userError;
+
+        return {
+          success: true,
+          user: {
+            id: user.id,
+            name: userData.name,
+            email: user.email
+          }
+        };
+      }
+
+      return { success: false };
+    } catch (error) {
+      console.error('Get current user error:', error);
+      throw error;
+    }
+  },
+
+  updateProfile: async (name: string) => {
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError) throw authError;
+      if (!user) throw new Error('Not authenticated');
+
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ name })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      return {
+        success: true,
+        user: {
+          id: user.id,
+          name,
+          email: user.email
+        }
+      };
+    } catch (error) {
+      console.error('Update profile error:', error);
+      throw error;
+    }
+  },
+
+  changePassword: async (newPassword: string) => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) throw error;
+
+      return { success: true };
+    } catch (error) {
+      console.error('Change password error:', error);
+      throw error;
+    }
+  },
+
+  deleteAccount: async () => {
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError) throw authError;
+      if (!user) throw new Error('Not authenticated');
+
+      const { error: deleteError } = await supabase
+        .from('users')
+        .delete()
+        .eq('id', user.id);
+
+      if (deleteError) throw deleteError;
+
+      await supabase.auth.signOut();
+
+      return { success: true };
+    } catch (error) {
+      console.error('Delete account error:', error);
       throw error;
     }
   }
