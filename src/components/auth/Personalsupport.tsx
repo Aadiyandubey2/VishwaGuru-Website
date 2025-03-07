@@ -15,7 +15,7 @@ const PersonalSupport: React.FC<PersonalSupportProps> = ({ language }) => {
       text: language === 'english' 
         ? 'Your support helps me continue creating and developing. Thank you for your generosity!' 
         : 'आपका समर्थन मुझे रचना और विकास जारी रखने में मदद करता है। आपकी उदारता के लिए धन्यवाद!',
-      url: 'www.VishwaGuru.site', 
+      url: '', 
     };
 
     try {
