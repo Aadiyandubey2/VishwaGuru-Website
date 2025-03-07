@@ -5,6 +5,7 @@ import { Sparkles, Menu, X } from 'lucide-react';
 import LanguageToggle from '../LanguageToggle';
 import ThemeToggle from '../ThemeToggle';
 import { Language } from '../../types';
+import ownerPhoto from '/images/owner-photo.jpg';
 
 interface HeaderProps {
   language: Language;
@@ -43,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage }) => {
           <div className="flex items-center space-x-3 border-l border-gray-200 dark:border-gray-700 pl-4">
             <div className="w-8 h-8 rounded-full overflow-hidden">
               <img 
-                src="/images/owner-photo.jpg" 
+                src={ownerPhoto}
                 alt={ownerDetails.name}
                 className="w-full h-full object-cover"
               />
@@ -80,7 +81,7 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage }) => {
               <div className="flex items-center space-x-3 pt-2">
                 <div className="w-8 h-8 rounded-full overflow-hidden">
                   <img 
-                    src="/images/owner-photo.jpg" 
+                    src={ownerPhoto}
                     alt={ownerDetails.name}
                     className="w-full h-full object-cover"
                   />
