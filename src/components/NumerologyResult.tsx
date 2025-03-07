@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { NumerologyResult as NumerologyResultType, Language } from '../types';
 import { destinyInterpretations, lifePathInterpretations, getInterpretation } from '../data/interpretations';
+import SaveReadingButton from './SaveReadingButton';
 
 interface NumerologyResultProps {
   result: NumerologyResultType | null;
   language: Language;
+  name?: string;
+  birthdate?: string;
 }
 
 const fadeIn = {
@@ -38,7 +41,7 @@ const NumberCard: React.FC<{ title: string; number: number; description: string;
   );
 };
 
-const NumerologyResultDisplay: React.FC<NumerologyResultProps> = ({ result, language }) => {
+const NumerologyResultDisplay: React.FC<NumerologyResultProps> = ({ result, language, name, birthdate }) => {
   if (!result) return null;
 
   const destinyInterp = getInterpretation(result.destinyNumber, destinyInterpretations);
@@ -51,9 +54,19 @@ const NumerologyResultDisplay: React.FC<NumerologyResultProps> = ({ result, lang
   return (
     <motion.div className="space-y-6" initial="hidden" animate="visible" variants={fadeIn}>
       <motion.div className="bg-indigo-50 dark:bg-indigo-900/30 p-4 rounded-lg border border-indigo-100 dark:border-indigo-800" variants={fadeIn}>
-        <h2 className="text-lg font-bold text-indigo-800 dark:text-indigo-200 mb-3">
-          {language === 'english' ? 'Your Numerology Profile' : 'आपका अंकशास्त्र प्रोफ़ाइल'}
-        </h2>
+        <div className="flex justify-between items-center mb-3">
+          <h2 className="text-lg font-bold text-indigo-800 dark:text-indigo-200">
+            {language === 'english' ? 'Your Numerology Profile' : 'आपका अंकशास्त्र प्रोफ़ाइल'}
+          </h2>
+          {name && birthdate && (
+            <SaveReadingButton 
+              result={result} 
+              name={name} 
+              birthdate={birthdate} 
+              language={language} 
+            />
+          )}
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
           <NumberCard 
