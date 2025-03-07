@@ -1,10 +1,10 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Sparkles, LogOut, User, Settings } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { Sparkles, HeartHandshake, Menu, X } from 'lucide-react';
 import LanguageToggle from '../LanguageToggle';
 import { Language } from '../../types';
-import { useAuth } from '../../context/AuthContext';
+import PersonalSupport from '../auth/Personalsupport';
 
 interface HeaderProps {
   language: Language;
@@ -12,154 +12,118 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ language, setLanguage }) => {
-  const { currentUser, logout } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [showQRCode, setShowQRCode] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/login');
-    } catch (error) {
-      console.error('Failed to log out', error);
-    }
-  };
-
-  const menuItemVariants = {
-    hidden: { opacity: 0, x: 20 },
-    visible: { 
-      opacity: 1, 
-      x: 0,
-      transition: { 
-        type: "spring", 
-        stiffness: 300 
-      }
-    }
+  const buttonVariants = {
+    initial: { scale: 1, backgroundColor: "#4f46e5" }, 
+    hover: { 
+      scale: 1.1, 
+      transition: { duration: 0.3 }
+    },
+    tap: { scale: 0.95 }
   };
 
   return (
     <motion.header 
       initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ 
-        duration: 0.6, 
-        type: "spring", 
-        stiffness: 120 
-      }}
-      className="bg-white shadow-md border-b border-gray-200 w-full overflow-hidden"
+      transition={{ duration: 0.6, type: "spring", stiffness: 120 }}
+      className="bg-white shadow-md border-b border-gray-200 w-full"
     >
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+        
         {}
-        <Link to="/" className="flex items-center space-x-2 group">
-          <motion.div
-            whileHover={{ 
-              rotate: [0, 15, -15, 0],
-              transition: { duration: 0.5 }
-            }}
-          >
-            <Sparkles 
-              className="text-indigo-600 transition-transform duration-300 group-hover:rotate-12" 
-              size={24} 
-            />
-          </motion.div>
-          <motion.h1 
-            whileHover={{ 
-              scale: 1.05,
-              transition: { duration: 0.3 }
-            }}
-            className="text-lg sm:text-xl font-bold text-indigo-900 border-b-2 border-indigo-600 pb-1"
-          >
+        <Link to="/" className="flex items-center space-x-2">
+          <Sparkles className="text-indigo-600" size={24} />
+          <h1 className="text-lg sm:text-xl font-bold text-indigo-900 border-b-2 border-indigo-600 pb-1">
             {language === 'english' ? 'VishwaGuru' : 'विश्वगुरु'}
-          </motion.h1>
+          </h1>
         </Link>
 
         {}
-        <motion.div 
-          initial="hidden"
-          animate="visible"
-          className="flex items-center space-x-2 sm:space-x-3 text-xs sm:text-sm"
-        >
-          {}
-          <motion.div variants={menuItemVariants}>
-            <LanguageToggle language={language} setLanguage={setLanguage} />
-          </motion.div>
+        <div className="hidden md:flex items-center space-x-4">
+          <LanguageToggle language={language} setLanguage={setLanguage} />
 
-          {}
-          {currentUser ? (
-            <div className="flex items-center space-x-2 sm:space-x-3">
-              {}
-              <motion.div variants={menuItemVariants}>
-                <Link 
-                  to="/dashboard" 
-                  className={`flex items-center border px-2 py-1 rounded-md transition-all duration-300 ease-in-out hover:scale-105 ${
-                    location.pathname === '/dashboard' 
-                      ? 'text-indigo-600 border-indigo-600 bg-indigo-50' 
-                      : 'text-gray-700 border-gray-300 hover:text-indigo-600 hover:border-indigo-600'
-                  }`}
-                >
-                  <User size={14} className="mr-1" />
-                  <span className="font-medium">
-                    {language === 'english' ? 'Dashboard' : 'डैशबोर्ड'}
-                  </span>
-                </Link>
-              </motion.div>
-              
-              {}
-              <motion.div variants={menuItemVariants}>
-                <Link 
-                  to="/profile" 
-                  className={`flex items-center border px-2 py-1 rounded-md transition-all duration-300 ease-in-out hover:scale-105 ${
-                    location.pathname === '/profile' 
-                      ? 'text-indigo-600 border-indigo-600 bg-indigo-50' 
-                      : 'text-gray-700 border-gray-300 hover:text-indigo-600 hover:border-indigo-600'
-                  }`}
-                >
-                  <Settings size={14} className="mr-1" />
-                  <span className="font-medium">
-                    {language === 'english' ? 'Settings' : 'सेटिंग्स'}
-                  </span>
-                </Link>
-              </motion.div>
-              
-              {}
-              <motion.div variants={menuItemVariants}>
-                <motion.button 
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleLogout}
-                  className="flex items-center border px-2 py-1 rounded-md text-gray-700 border-gray-300 hover:text-indigo-600 hover:border-indigo-600 transition-all duration-300 ease-in-out hover:scale-105"
-                >
-                  <LogOut size={14} className="mr-1" />
-                  <span className="font-medium">
-                    {language === 'english' ? 'Logout' : 'लॉग आउट'}
-                  </span>
-                </motion.button>
-              </motion.div>
-            </div>
-          ) : (
-            <div className="flex items-center space-x-2 sm:space-x-3">
-              {}
-              <motion.div variants={menuItemVariants}>
-                <Link 
-                  to="/login" 
-                  className="border border-gray-300 text-xs sm:text-sm font-medium text-gray-700 px-2 py-1 rounded-md hover:text-indigo-600 hover:border-indigo-600 transition-all duration-300 ease-in-out hover:scale-105"
-                >
-                  {language === 'english' ? 'Login' : 'लॉग इन'}
-                </Link>
-              </motion.div>
-              
-              {}
-              <motion.div variants={menuItemVariants}>
-                <Link 
-                  to="/signup" 
-                  className="text-xs sm:text-sm font-medium border border-indigo-600 bg-indigo-600 text-white px-3 py-1 rounded-md hover:bg-indigo-700 transition-all duration-300 ease-in-out hover:scale-105 w-auto text-center"
-                >
-                  {language === 'english' ? 'Sign Up' : 'साइन अप'}
-                </Link>
-              </motion.div>
-            </div>
-          )}
-        </motion.div>
+          <motion.button
+            variants={buttonVariants}
+            initial="initial"
+            whileHover="hover"
+            whileTap="tap"
+            onClick={() => setShowQRCode(true)}
+            className="flex items-center border border-indigo-600 bg-indigo-600 text-white px-4 py-2 rounded-md transition-all duration-300 hover:bg-indigo-700"
+          >
+            <HeartHandshake size={16} className="mr-2" />
+            <span className="font-medium">
+              {language === 'english' ? 'Support' : 'सहयोग'}
+            </span>
+          </motion.button>
+        </div>
+
+        {}
+        <button 
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="md:hidden flex items-center text-indigo-600"
+        >
+          {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
       </div>
+
+      {}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-white shadow-md border-t border-gray-200"
+          >
+            <div className="flex flex-col items-center py-4 space-y-3">
+              <LanguageToggle language={language} setLanguage={setLanguage} />
+
+              <motion.button
+                variants={buttonVariants}
+                initial="initial"
+                whileHover="hover"
+                whileTap="tap"
+                onClick={() => setShowQRCode(true)}
+                className="flex items-center border border-indigo-600 bg-indigo-600 text-white px-4 py-2 rounded-md transition-all duration-300 hover:bg-indigo-700 w-3/4"
+              >
+                <HeartHandshake size={16} className="mr-2" />
+                {language === 'english' ? 'Support' : 'सहयोग'}
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {}
+      {showQRCode && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded-lg p-6 shadow-lg relative max-w-md w-full">
+            <button 
+              onClick={() => setShowQRCode(false)}
+              className="absolute top-2 right-2 text-gray-600 hover:text-gray-800"
+            >
+              ✖
+            </button>
+            
+            <h2 className="text-lg font-semibold mb-4 text-center text-gray-900">
+              {language === 'english' ? 'Personal Support QR Code' : 'व्यक्तिगत सहायता क्यूआर कोड'}
+            </h2>
+
+            <div className="flex justify-center">
+              <PersonalSupport language={language} />
+            </div>
+
+            <p className="text-gray-500 text-center mt-3">
+              {language === 'english' 
+                ? 'Scan the QR code for personalized numerology support.' 
+                : 'व्यक्तिगत अंकशास्त्र सहायता के लिए क्यूआर कोड स्कैन करें।'}
+            </p>
+          </div>
+        </div>
+      )}
     </motion.header>
   );
 };

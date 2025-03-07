@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { Language } from '../types';
-import { useAuth } from '../context/AuthContext';
-import { numerologyService } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
 interface NumerologyFormProps {
@@ -13,10 +11,6 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
   const [name, setName] = useState('');
   const [birthdate, setBirthdate] = useState('');
   const [errors, setErrors] = useState({ name: '', birthdate: '' });
-  const [saveToProfile, setSaveToProfile] = useState(false);
-  const [savingError, setSavingError] = useState('');
-  const [saving, setSaving] = useState(false);
-  const { currentUser } = useAuth();
   const navigate = useNavigate();
 
   const validateForm = (): boolean => {
@@ -37,28 +31,10 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
     return isValid;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSavingError('');
-    
     if (validateForm()) {
-      // Calculate numerology
       onCalculate(name, birthdate);
-      
-      // Save to profile if user is logged in and option is selected
-      if (currentUser && saveToProfile) {
-        try {
-          setSaving(true);
-          await numerologyService.saveReading(name, birthdate);
-          setSaving(false);
-        } catch (error) {
-          console.error('Error saving reading:', error);
-          setSavingError(language === 'english' 
-            ? 'Failed to save reading to your profile. Please try again.' 
-            : 'आपके प्रोफ़ाइल में पठन सहेजने में विफल। कृपया पुनः प्रयास करें।');
-          setSaving(false);
-        }
-      }
     }
   };
 
@@ -93,53 +69,27 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
         {errors.birthdate && <p className="mt-1 text-sm text-red-600">{errors.birthdate}</p>}
       </div>
 
-      {savingError && (
-        <div className="bg-red-50 text-red-600 p-3 rounded-md">
-          {savingError}
-        </div>
-      )}
-
-      {currentUser && (
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="saveToProfile"
-            checked={saveToProfile}
-            onChange={(e) => setSaveToProfile(e.target.checked)}
-            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-          />
-          <label htmlFor="saveToProfile" className="ml-2 block text-sm text-gray-700">
-            {language === 'english' ? 'Save this reading to my profile' : 'इस पठन को मेरी प्रोफ़ाइल में सहेजें'}
-          </label>
-        </div>
-      )}
-
-      {!currentUser && (
-        <div className="text-sm text-gray-600 italic">
-          <p>
-            {language === 'english' 
-              ? 'Sign in to save your readings to your profile.' 
-              : 'अपने पठन को अपनी प्रोफ़ाइल में सहेजने के लिए साइन इन करें।'}
-            {' '}
-            <button
-              type="button"
-              onClick={() => navigate('/login')}
-              className="text-indigo-600 hover:text-indigo-800 font-medium"
-            >
-              {language === 'english' ? 'Sign in' : 'साइन इन करें'}
-            </button>
-          </p>
-        </div>
-      )}
+      <div className="text-sm text-gray-600 italic">
+        <p>
+          {language === 'english' 
+            ? 'Need personal guidance? Scan the QR code for support.'
+            : 'व्यक्तिगत मार्गदर्शन चाहिए? सहायता के लिए QR कोड स्कैन करें।'}
+          {' '}
+          <button
+            type="button"
+            onClick={() => navigate('/personal-support')}
+            className="text-indigo-600 hover:text-indigo-800 font-medium"
+          >
+            {language === 'english' ? 'Get Support' : 'सहायता प्राप्त करें'}
+          </button>
+        </p>
+      </div>
 
       <button
         type="submit"
-        disabled={saving}
-        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
       >
-        {saving 
-          ? (language === 'english' ? 'Saving...' : 'सहेज रहा है...') 
-          : (language === 'english' ? 'Calculate Numerology' : 'अंकशास्त्र की गणना करें')}
+        {language === 'english' ? 'Calculate Numerology' : 'अंकशास्त्र की गणना करें'}
       </button>
     </form>
   );

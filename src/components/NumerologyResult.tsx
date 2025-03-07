@@ -44,6 +44,10 @@ const NumerologyResultDisplay: React.FC<NumerologyResultProps> = ({ result, lang
   const destinyInterp = getInterpretation(result.destinyNumber, destinyInterpretations);
   const lifePathInterp = getInterpretation(result.lifePathNumber, lifePathInterpretations);
 
+  const defaultDescription = language === 'english' 
+    ? 'Prediction will come in further updates.' 
+    : 'भविष्यवाणी आगामी अपडेट में उपलब्ध होगी।';
+
   return (
     <motion.div className="space-y-6" initial="hidden" animate="visible" variants={fadeIn}>
       <motion.div className="bg-indigo-50 p-4 rounded-lg border border-indigo-100" variants={fadeIn}>
@@ -55,19 +59,31 @@ const NumerologyResultDisplay: React.FC<NumerologyResultProps> = ({ result, lang
           <NumberCard 
             title={language === 'english' ? 'Destiny Number' : 'भाग्य अंक'} 
             number={result.destinyNumber} 
-            description={language === 'english' ? destinyInterp?.englishTitle : destinyInterp?.hindiTitle} 
+            description={destinyInterp ? (language === 'english' ? destinyInterp.englishTitle : destinyInterp.hindiTitle) : defaultDescription} 
           />
           <NumberCard 
             title={language === 'english' ? 'Life Path Number' : 'जीवन पथ अंक'} 
             number={result.lifePathNumber} 
-            description={language === 'english' ? lifePathInterp?.englishTitle : lifePathInterp?.hindiTitle} 
+            description={lifePathInterp ? (language === 'english' ? lifePathInterp.englishTitle : lifePathInterp.hindiTitle) : defaultDescription} 
           />
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <NumberCard title={language === 'english' ? 'Soul Urge Number' : 'आत्मा की इच्छा अंक'} number={result.soulUrgeNumber} description="" />
-          <NumberCard title={language === 'english' ? 'Personality Number' : 'व्यक्तित्व अंक'} number={result.personalityNumber} description="" />
-          <NumberCard title={language === 'english' ? 'Birthday Number' : 'जन्मदिन अंक'} number={result.birthdayNumber} description="" />
+          <NumberCard 
+            title={language === 'english' ? 'Soul Urge Number' : 'आत्मा की इच्छा अंक'} 
+            number={result.soulUrgeNumber} 
+            description={defaultDescription} 
+          />
+          <NumberCard 
+            title={language === 'english' ? 'Personality Number' : 'व्यक्तित्व अंक'} 
+            number={result.personalityNumber} 
+            description={defaultDescription} 
+          />
+          <NumberCard 
+            title={language === 'english' ? 'Birthday Number' : 'जन्मदिन अंक'} 
+            number={result.birthdayNumber} 
+            description={defaultDescription} 
+          />
         </div>
       </motion.div>
 
@@ -75,19 +91,27 @@ const NumerologyResultDisplay: React.FC<NumerologyResultProps> = ({ result, lang
         <motion.div className="bg-white p-4 rounded-lg shadow-md" variants={fadeIn}>
           <h3 className="text-md font-semibold mb-2 text-indigo-800">
             {language === 'english' 
-              ? `Destiny Number ${result.destinyNumber}: ${destinyInterp?.englishTitle}` 
-              : `भाग्य अंक ${result.destinyNumber}: ${destinyInterp?.hindiTitle}`}
+              ? `Destiny Number ${result.destinyNumber}: ${destinyInterp?.englishTitle || 'Prediction coming soon'}` 
+              : `भाग्य अंक ${result.destinyNumber}: ${destinyInterp?.hindiTitle || 'भविष्यवाणी जल्द ही आएगी'}`}
           </h3>
-          <p className="text-gray-700 text-sm">{language === 'english' ? destinyInterp?.englishDescription : destinyInterp?.hindiDescription}</p>
+          <p className="text-gray-700 text-sm">
+            {language === 'english' 
+              ? destinyInterp?.englishDescription || 'Prediction will come in further updates.' 
+              : destinyInterp?.hindiDescription || 'भविष्यवाणी आगामी अपडेट में उपलब्ध होगी।'}
+          </p>
         </motion.div>
 
         <motion.div className="bg-white p-4 rounded-lg shadow-md" variants={fadeIn}>
           <h3 className="text-md font-semibold mb-2 text-indigo-800">
             {language === 'english' 
-              ? `Life Path Number ${result.lifePathNumber}: ${lifePathInterp?.englishTitle}` 
-              : `जीवन पथ अंक ${result.lifePathNumber}: ${lifePathInterp?.hindiTitle}`}
+              ? `Life Path Number ${result.lifePathNumber}: ${lifePathInterp?.englishTitle || 'Prediction coming soon'}` 
+              : `जीवन पथ अंक ${result.lifePathNumber}: ${lifePathInterp?.hindiTitle || 'भविष्यवाणी जल्द ही आएगी'}`}
           </h3>
-          <p className="text-gray-700 text-sm">{language === 'english' ? lifePathInterp?.englishDescription : lifePathInterp?.hindiDescription}</p>
+          <p className="text-gray-700 text-sm">
+            {language === 'english' 
+              ? lifePathInterp?.englishDescription || 'Prediction will come in further updates.' 
+              : lifePathInterp?.hindiDescription || 'भविष्यवाणी आगामी अपडेट में उपलब्ध होगी।'}
+          </p>
         </motion.div>
       </motion.div>
     </motion.div>
