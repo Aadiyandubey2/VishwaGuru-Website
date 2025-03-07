@@ -57,9 +57,8 @@ const Footer: React.FC<FooterProps> = ({ language }) => {
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="relative text-blue-900 py-6 mt-16 overflow-hidden"
+      className="relative text-blue-900 dark:text-blue-100 py-6 mt-16 overflow-hidden bg-white dark:bg-gray-800"
     >
-      {}
       <motion.div 
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
@@ -76,7 +75,7 @@ const Footer: React.FC<FooterProps> = ({ language }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.7, duration: 0.5 }}
-          className="text-lg font-semibold"
+          className="text-lg font-semibold text-gray-900 dark:text-gray-100"
         >
           {language === 'english' 
             ? '© VishwaGuru Website. All rights reserved. Owner Aadiyan Dubey'
@@ -105,7 +104,7 @@ const Footer: React.FC<FooterProps> = ({ language }) => {
               className={`
                 relative flex items-center space-x-2 px-3 py-2 rounded-full 
                 text-white shadow-lg transition-all duration-300 
-                ${link.colors.bg} hover:shadow-xl
+                ${link.colors.bg} hover:shadow-xl dark:shadow-gray-900/50
               `}
             >
               <link.icon size={18} strokeWidth={2} />
@@ -115,7 +114,6 @@ const Footer: React.FC<FooterProps> = ({ language }) => {
         </div>
       </div>
       
-      {}
       <motion.div 
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
