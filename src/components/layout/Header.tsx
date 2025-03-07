@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Sparkles, HeartHandshake, Menu, X } from 'lucide-react';
+import { Sparkles, Menu, X } from 'lucide-react';
 import LanguageToggle from '../LanguageToggle';
+import ThemeToggle from '../ThemeToggle';
 import { Language } from '../../types';
-import PersonalSupport from '../auth/Personalsupport';
 
 interface HeaderProps {
   language: Language;
@@ -12,16 +12,12 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ language, setLanguage }) => {
-  const [showQRCode, setShowQRCode] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const buttonVariants = {
-    initial: { scale: 1, backgroundColor: "#4f46e5" }, 
-    hover: { 
-      scale: 1.1, 
-      transition: { duration: 0.3 }
-    },
-    tap: { scale: 0.95 }
+  const ownerDetails = {
+    name: language === 'english' ? 'Aadiyan Dubey' : 'आदियन दुबे',
+    title: language === 'english' ? 'Astrologer & Numerology Expert' : 'ज्योतिषी और अंकशास्त्र विशेषज्ञ',
+    education: language === 'english' ? 'Computer Science Student, NIT Nagaland' : 'कंप्यूटर विज्ञान छात्र, एनआईटी नागालैंड'
   };
 
   return (
@@ -29,101 +25,76 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage }) => {
       initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, type: "spring", stiffness: 120 }}
-      className="bg-white shadow-md border-b border-gray-200 w-full"
+      className="bg-white dark:bg-gray-800 shadow-md border-b border-gray-200 dark:border-gray-700 w-full"
     >
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        
-        {}
         <Link to="/" className="flex items-center space-x-2">
-          <Sparkles className="text-indigo-600" size={24} />
-          <h1 className="text-lg sm:text-xl font-bold text-indigo-900 border-b-2 border-indigo-600 pb-1">
+          <Sparkles className="text-indigo-600 dark:text-indigo-400" size={24} />
+          <h1 className="text-lg sm:text-xl font-bold text-indigo-900 dark:text-indigo-100 border-b-2 border-indigo-600 dark:border-indigo-400 pb-1 leading-relaxed">
             {language === 'english' ? 'VishwaGuru' : 'विश्वगुरु'}
           </h1>
         </Link>
 
-        {}
         <div className="hidden md:flex items-center space-x-4">
           <LanguageToggle language={language} setLanguage={setLanguage} />
-
-          <motion.button
-            variants={buttonVariants}
-            initial="initial"
-            whileHover="hover"
-            whileTap="tap"
-            onClick={() => setShowQRCode(true)}
-            className="flex items-center border border-indigo-600 bg-indigo-600 text-white px-4 py-2 rounded-md transition-all duration-300 hover:bg-indigo-700"
-          >
-            <HeartHandshake size={16} className="mr-2" />
-            <span className="font-medium">
-              {language === 'english' ? 'Support' : 'सहयोग'}
-            </span>
-          </motion.button>
+          <ThemeToggle />
+          
+          {/* Owner Info */}
+          <div className="flex items-center space-x-3 border-l border-gray-200 dark:border-gray-700 pl-4">
+            <div className="w-8 h-8 rounded-full overflow-hidden">
+              <img 
+                src="/owner-photo.jpg" 
+                alt={ownerDetails.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="text-sm">
+              <p className="font-medium text-gray-900 dark:text-gray-100">{ownerDetails.name}</p>
+              <p className="text-gray-500 dark:text-gray-400">{ownerDetails.title}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">{ownerDetails.education}</p>
+            </div>
+          </div>
         </div>
 
-        {}
         <button 
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="md:hidden flex items-center text-indigo-600"
+          className="md:hidden flex items-center text-indigo-600 dark:text-indigo-400"
         >
           {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
       </div>
 
-      {}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-white shadow-md border-t border-gray-200"
+            className="md:hidden bg-white dark:bg-gray-800 shadow-md border-t border-gray-200 dark:border-gray-700"
           >
             <div className="flex flex-col items-center py-4 space-y-3">
               <LanguageToggle language={language} setLanguage={setLanguage} />
-
-              <motion.button
-                variants={buttonVariants}
-                initial="initial"
-                whileHover="hover"
-                whileTap="tap"
-                onClick={() => setShowQRCode(true)}
-                className="flex items-center border border-indigo-600 bg-indigo-600 text-white px-4 py-2 rounded-md transition-all duration-300 hover:bg-indigo-700 w-3/4"
-              >
-                <HeartHandshake size={16} className="mr-2" />
-                {language === 'english' ? 'Support' : 'सहयोग'}
-              </motion.button>
+              <ThemeToggle />
+              
+              {/* Owner Info in Mobile Menu */}
+              <div className="flex items-center space-x-3 pt-2">
+                <div className="w-8 h-8 rounded-full overflow-hidden">
+                  <img 
+                    src="/owner-photo.jpg" 
+                    alt={ownerDetails.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="text-sm">
+                  <p className="font-medium text-gray-900 dark:text-gray-100">{ownerDetails.name}</p>
+                  <p className="text-gray-500 dark:text-gray-400">{ownerDetails.title}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">{ownerDetails.education}</p>
+                </div>
+              </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {}
-      {showQRCode && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg p-6 shadow-lg relative max-w-md w-full">
-            <button 
-              onClick={() => setShowQRCode(false)}
-              className="absolute top-2 right-2 text-gray-600 hover:text-gray-800"
-            >
-              ✖
-            </button>
-            
-            <h2 className="text-lg font-semibold mb-4 text-center text-gray-900">
-              {language === 'english' ? 'Personal Support QR Code' : 'व्यक्तिगत सहायता क्यूआर कोड'}
-            </h2>
-
-            <div className="flex justify-center">
-              <PersonalSupport language={language} />
-            </div>
-
-            <p className="text-gray-500 text-center mt-3">
-              {language === 'english' 
-                ? 'Scan the QR code for personalized numerology support.' 
-                : 'व्यक्तिगत अंकशास्त्र सहायता के लिए क्यूआर कोड स्कैन करें।'}
-            </p>
-          </div>
-        </div>
-      )}
     </motion.header>
   );
 };
