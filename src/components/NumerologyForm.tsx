@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Language } from '../types';
-import { useNavigate } from 'react-router-dom';
+import PersonalSupport from './auth/Personalsupport';
 
 interface NumerologyFormProps {
   onCalculate: (name: string, birthdate: string) => void;
@@ -10,88 +11,94 @@ interface NumerologyFormProps {
 const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }) => {
   const [name, setName] = useState('');
   const [birthdate, setBirthdate] = useState('');
-  const [errors, setErrors] = useState({ name: '', birthdate: '' });
-  const navigate = useNavigate();
-
-  const validateForm = (): boolean => {
-    const newErrors = { name: '', birthdate: '' };
-    let isValid = true;
-
-    if (!name.trim()) {
-      newErrors.name = language === 'english' ? 'Name is required' : 'नाम आवश्यक है';
-      isValid = false;
-    }
-
-    if (!birthdate) {
-      newErrors.birthdate = language === 'english' ? 'Birthdate is required' : 'जन्मतिथि आवश्यक है';
-      isValid = false;
-    }
-
-    setErrors(newErrors);
-    return isValid;
-  };
+  const [showQRCode, setShowQRCode] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (validateForm()) {
-      onCalculate(name, birthdate);
-    }
+    onCalculate(name, birthdate);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-          {language === 'english' ? 'Full Name' : 'पूरा नाम'}
-        </label>
-        <input
-          type="text"
-          id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          placeholder={language === 'english' ? 'Enter your full name' : 'अपना पूरा नाम दर्ज करें'}
-        />
-        {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
-      </div>
+    <div className="w-full">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            {language === 'english' ? 'Full Name' : 'पूरा नाम'}
+          </label>
+          <input
+            type="text"
+            id="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            required
+            placeholder={language === 'english' ? 'Enter your full name' : 'अपना पूरा नाम दर्ज करें'}
+          />
+        </div>
 
-      <div>
-        <label htmlFor="birthdate" className="block text-sm font-medium text-gray-700 mb-1">
-          {language === 'english' ? 'Date of Birth' : 'जन्म तिथि'}
-        </label>
-        <input
-          type="date"
-          id="birthdate"
-          value={birthdate}
-          onChange={(e) => setBirthdate(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-        {errors.birthdate && <p className="mt-1 text-sm text-red-600">{errors.birthdate}</p>}
-      </div>
+        <div>
+          <label htmlFor="birthdate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            {language === 'english' ? 'Date of Birth' : 'जन्म तिथि'}
+          </label>
+          <input
+            type="date"
+            id="birthdate"
+            value={birthdate}
+            onChange={(e) => setBirthdate(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            required
+          />
+        </div>
 
-      <div className="text-sm text-gray-600 italic">
-        <p>
-          {language === 'english' 
-            ? 'Need personal guidance? Scan the QR code for support.'
-            : 'व्यक्तिगत मार्गदर्शन चाहिए? सहायता के लिए QR कोड स्कैन करें।'}
-          {' '}
-          <button
-            type="button"
-            onClick={() => navigate('/personal-support')}
-            className="text-indigo-600 hover:text-indigo-800 font-medium"
+        <div className="flex items-center justify-between">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            type="submit"
+            className="bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-2 rounded-md hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors"
           >
-            {language === 'english' ? 'Get Support' : 'सहायता प्राप्त करें'}
-          </button>
-        </p>
-      </div>
+            {language === 'english' ? 'Calculate' : 'गणना करें'}
+          </motion.button>
 
-      <button
-        type="submit"
-        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-      >
-        {language === 'english' ? 'Calculate Numerology' : 'अंकशास्त्र की गणना करें'}
-      </button>
-    </form>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            type="button"
+            onClick={() => setShowQRCode(true)}
+            className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+          >
+            {language === 'english' ? 'Need Help?' : 'सहायता चाहिए?'}
+          </motion.button>
+        </div>
+      </form>
+
+      {showQRCode && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg relative max-w-md w-full">
+            <button 
+              onClick={() => setShowQRCode(false)}
+              className="absolute top-2 right-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+            >
+              ✖
+            </button>
+            
+            <h2 className="text-lg font-semibold mb-4 text-center text-gray-900 dark:text-gray-100">
+              {language === 'english' ? 'Personal Support QR Code' : 'व्यक्तिगत सहायता क्यूआर कोड'}
+            </h2>
+
+            <div className="flex justify-center">
+              <PersonalSupport language={language} />
+            </div>
+
+            <p className="text-gray-500 dark:text-gray-400 text-center mt-3">
+              {language === 'english' 
+                ? 'Scan the QR code for personalized numerology support.' 
+                : 'व्यक्तिगत अंकशास्त्र सहायता के लिए क्यूआर कोड स्कैन करें।'}
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -18,7 +18,7 @@ const NumberCard: React.FC<{ title: string; number: number; description: string;
 
   return (
     <motion.div 
-      className={`relative bg-white p-3 rounded-md shadow-md border-2 transition-all transform hover:scale-105 ${isTouched ? 'border-red-500 text-red-700 font-bold' : ''} ${className}`}
+      className={`relative bg-white dark:bg-gray-800 p-3 rounded-md shadow-md border-2 transition-all transform hover:scale-105 ${isTouched ? 'border-red-500 text-red-700 dark:text-red-400 font-bold' : ''} ${className}`}
       initial="hidden"
       animate="visible"
       variants={fadeIn}
@@ -29,11 +29,11 @@ const NumberCard: React.FC<{ title: string; number: number; description: string;
         className="absolute inset-0 rounded-md border-2 animate-gradient-border"
         style={{ borderImage: 'linear-gradient(90deg, red, purple) 1' }}
       ></motion.div>
-      <h3 className="text-md font-semibold mb-1 relative z-10">{title}</h3>
+      <h3 className="text-md font-semibold mb-1 relative z-10 text-gray-900 dark:text-gray-100">{title}</h3>
       <div className="flex items-center justify-center mb-2 relative z-10">
-        <motion.span className="text-2xl font-bold text-indigo-600">{number}</motion.span>
+        <motion.span className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{number}</motion.span>
       </div>
-      <p className="text-gray-700 text-sm relative z-10">{description}</p>
+      <p className="text-gray-700 dark:text-gray-300 text-sm relative z-10">{description}</p>
     </motion.div>
   );
 };
@@ -50,8 +50,8 @@ const NumerologyResultDisplay: React.FC<NumerologyResultProps> = ({ result, lang
 
   return (
     <motion.div className="space-y-6" initial="hidden" animate="visible" variants={fadeIn}>
-      <motion.div className="bg-indigo-50 p-4 rounded-lg border border-indigo-100" variants={fadeIn}>
-        <h2 className="text-lg font-bold text-indigo-800 mb-3">
+      <motion.div className="bg-indigo-50 dark:bg-indigo-900/30 p-4 rounded-lg border border-indigo-100 dark:border-indigo-800" variants={fadeIn}>
+        <h2 className="text-lg font-bold text-indigo-800 dark:text-indigo-200 mb-3">
           {language === 'english' ? 'Your Numerology Profile' : 'आपका अंकशास्त्र प्रोफ़ाइल'}
         </h2>
         
@@ -88,26 +88,26 @@ const NumerologyResultDisplay: React.FC<NumerologyResultProps> = ({ result, lang
       </motion.div>
 
       <motion.div className="space-y-4" variants={fadeIn}>
-        <motion.div className="bg-white p-4 rounded-lg shadow-md" variants={fadeIn}>
-          <h3 className="text-md font-semibold mb-2 text-indigo-800">
+        <motion.div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md" variants={fadeIn}>
+          <h3 className="text-md font-semibold mb-2 text-indigo-800 dark:text-indigo-200">
             {language === 'english' 
               ? `Destiny Number ${result.destinyNumber}: ${destinyInterp?.englishTitle || 'Prediction coming soon'}` 
               : `भाग्य अंक ${result.destinyNumber}: ${destinyInterp?.hindiTitle || 'भविष्यवाणी जल्द ही आएगी'}`}
           </h3>
-          <p className="text-gray-700 text-sm">
+          <p className="text-gray-700 dark:text-gray-300 text-sm">
             {language === 'english' 
               ? destinyInterp?.englishDescription || 'Prediction will come in further updates.' 
               : destinyInterp?.hindiDescription || 'भविष्यवाणी आगामी अपडेट में उपलब्ध होगी।'}
           </p>
         </motion.div>
 
-        <motion.div className="bg-white p-4 rounded-lg shadow-md" variants={fadeIn}>
-          <h3 className="text-md font-semibold mb-2 text-indigo-800">
+        <motion.div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md" variants={fadeIn}>
+          <h3 className="text-md font-semibold mb-2 text-indigo-800 dark:text-indigo-200">
             {language === 'english' 
               ? `Life Path Number ${result.lifePathNumber}: ${lifePathInterp?.englishTitle || 'Prediction coming soon'}` 
               : `जीवन पथ अंक ${result.lifePathNumber}: ${lifePathInterp?.hindiTitle || 'भविष्यवाणी जल्द ही आएगी'}`}
           </h3>
-          <p className="text-gray-700 text-sm">
+          <p className="text-gray-700 dark:text-gray-300 text-sm">
             {language === 'english' 
               ? lifePathInterp?.englishDescription || 'Prediction will come in further updates.' 
               : lifePathInterp?.hindiDescription || 'भविष्यवाणी आगामी अपडेट में उपलब्ध होगी।'}
