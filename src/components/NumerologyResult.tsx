@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Mail } from 'lucide-react';
 import { NumerologyResult as NumerologyResultType, Language } from '../types';
 import { destinyInterpretations, lifePathInterpretations, getInterpretation } from '../data/interpretations';
+import SaveReadingButton from './SaveReadingButton';
+import { useAuth } from '../utils/AuthContext';
+import { useNotification } from '../utils/NotificationContext';
+import { sendPromotionalEmail } from '../utils/emailService';
 
 interface NumerologyResultProps {
   result: NumerologyResultType | null;
   language: Language;
+  name?: string;
+  birthdate?: string;
 }
 
 const fadeIn = {
@@ -38,7 +45,12 @@ const NumberCard: React.FC<{ title: string; number: number; description: string;
   );
 };
 
-const NumerologyResultDisplay: React.FC<NumerologyResultProps> = ({ result, language }) => {
+const NumerologyResultDisplay: React.FC<NumerologyResultProps> = ({ result, language, name, birthdate }) => {
+  const { user } = useAuth();
+  const { showNotification } = useNotification();
+  const [emailSent, setEmailSent] = useState(false);
+  const [sending, setSending] = useState(false);
+
   if (!result) return null;
 
   const destinyInterp = getInterpretation(result.destinyNumber, destinyInterpretations);
@@ -48,12 +60,78 @@ const NumerologyResultDisplay: React.FC<NumerologyResultProps> = ({ result, lang
     ? 'Prediction will come in further updates.' 
     : 'भविष्यवाणी आगामी अपडेट में उपलब्ध होगी।';
 
+  const handleSendEmail = async () => {
+    if (!user?.email || emailSent || !name) return;
+
+    setSending(true);
+    try {
+      const success = await sendPromotionalEmail(
+        user.email,
+        name,
+        language,
+        result
+      );
+
+      if (success) {
+        setEmailSent(true);
+        showNotification('success', language === 'english'
+          ? 'Your reading has been sent to your email!'
+          : 'आपकी रीडिंग आपके ईमेल पर भेज दी गई है!');
+      } else {
+        showNotification('error', language === 'english'
+          ? 'Failed to send email. Please try again.'
+          : 'ईमेल भेजने में विफल। कृपया पुनः प्रयास करें।');
+      }
+    } catch (error) {
+      console.error('Error sending email:', error);
+      showNotification('error', language === 'english'
+        ? 'Error sending email'
+        : 'ईमेल भेजने में त्रुटि');
+    } finally {
+      setSending(false);
+    }
+  };
+
   return (
     <motion.div className="space-y-6" initial="hidden" animate="visible" variants={fadeIn}>
       <motion.div className="bg-indigo-50 dark:bg-indigo-900/30 p-4 rounded-lg border border-indigo-100 dark:border-indigo-800" variants={fadeIn}>
-        <h2 className="text-lg font-bold text-indigo-800 dark:text-indigo-200 mb-3">
-          {language === 'english' ? 'Your Numerology Profile' : 'आपका अंकशास्त्र प्रोफ़ाइल'}
-        </h2>
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-3">
+          <h2 className="text-lg font-bold text-indigo-800 dark:text-indigo-200">
+            {language === 'english' ? 'Your Numerology Profile' : 'आपका अंकशास्त्र प्रोफ़ाइल'}
+          </h2>
+          <div className="flex items-center gap-2">
+            {user?.email && (
+              <motion.button
+                onClick={handleSendEmail}
+                disabled={emailSent || sending}
+                className={`inline-flex items-center px-4 py-2 rounded-lg text-white font-medium transition-colors ${
+                  emailSent
+                    ? 'bg-green-500 cursor-not-allowed'
+                    : sending
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-blue-600 hover:bg-blue-700'
+                }`}
+                whileHover={!emailSent && !sending ? { scale: 1.05 } : {}}
+                whileTap={!emailSent && !sending ? { scale: 0.95 } : {}}
+              >
+                <Mail className="w-5 h-5 mr-2" />
+                {emailSent 
+                  ? (language === 'english' ? 'Email Sent!' : 'ईमेल भेज दिया गया!')
+                  : sending
+                  ? (language === 'english' ? 'Sending...' : 'भेज रहा है...')
+                  : (language === 'english' ? 'Send to Email' : 'ईमेल पर भेजें')}
+              </motion.button>
+            )}
+            {name && birthdate && (
+              <SaveReadingButton 
+                result={result} 
+                name={name} 
+                birthdate={birthdate} 
+                language={language} 
+              />
+            )}
+          </div>
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
           <NumberCard 
