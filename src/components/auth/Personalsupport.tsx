@@ -11,11 +11,11 @@ interface PersonalSupportProps {
 const PersonalSupport: React.FC<PersonalSupportProps> = ({ language }) => {
   const handleShare = async () => {
     const shareData = {
-      title: language === 'english' ? 'Support Me' : 'मुझे सहयोग दें',
+      title: language === 'english' ? 'Support a Student' : 'एक छात्र की मदद करें',
       text: language === 'english' 
-        ? 'Your support helps me continue creating and developing. Thank you for your generosity!' 
-        : 'आपका समर्थन मुझे रचना और विकास जारी रखने में मदद करता है। आपकी उदारता के लिए धन्यवाद!',
-      url: '', 
+        ? 'I am a student working on this project. Your support will help me continue my studies and development work. Thank you for your kindness!' 
+        : 'मैं एक छात्र हूं जो इस प्रोजेक्ट पर काम कर रहा हूं। आपका समर्थन मुझे अपनी पढ़ाई और विकास कार्य जारी रखने में मदद करेगा। आपकी दयालुता के लिए धन्यवाद!',
+      url: window.location.origin,
     };
 
     try {
@@ -34,67 +34,56 @@ const PersonalSupport: React.FC<PersonalSupportProps> = ({ language }) => {
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 20 }} 
-      animate={{ opacity: 1, y: 0 }} 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
       transition={{ duration: 0.6 }}
-      className="max-w-md mx-auto bg-white rounded-xl shadow-lg overflow-hidden p-8 relative"
+      className="w-full"
     >
-      {}
-      <motion.div 
-        className="absolute top-0 left-0 w-full h-40 bg-indigo-100 rounded-b-xl flex items-center justify-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-      >
-        <HeartHandshake className="text-indigo-600 mr-2" size={24} />
-        <h2 className="text-2xl font-bold text-gray-900">
-          {language === 'english' ? 'Support Me' : 'मुझे सहयोग दें'}
-        </h2>
-      </motion.div>
-      
-      <motion.div className="mt-16 mb-6 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
-        <p className="text-gray-600">
+      <div className="text-center mb-4">
+        <div className="flex items-center justify-center mb-2">
+          <HeartHandshake className="text-indigo-600 dark:text-indigo-400 mr-2" size={24} />
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            {language === 'english' ? 'Support a Student' : 'एक छात्र की मदद करें'}
+          </h2>
+        </div>
+        
+        <p className="text-sm text-gray-600 dark:text-gray-400">
           {language === 'english' 
-            ? 'Your support helps me continue creating and developing. Thank you for your generosity!' 
-            : 'आपका समर्थन मुझे रचना और विकास जारी रखने में मदद करता है। आपकी उदारता के लिए धन्यवाद!'}
+            ? 'I am a student and cannot help others. Please consider supporting my education and development work.' 
+            : 'मैं एक छात्र हूं और दूसरों की मदद नहीं कर सकता। कृपया मेरी शिक्षा और विकास कार्य में सहयोग करने पर विचार करें।'}
         </p>
-      </motion.div>
+      </div>
 
-      <motion.div className="flex justify-center mb-6" whileHover={{ scale: 1.05 }}>
+      <motion.div 
+        className="flex justify-center mb-4"
+        whileHover={{ scale: 1.02 }}
+        transition={{ type: "spring", stiffness: 300 }}
+      >
         <img 
           src={qrCode} 
           alt="Support QR Code" 
-          className="w-64 h-64 rounded-lg shadow-md border-4 border-indigo-300"
+          className="w-48 h-48 rounded-lg shadow-md border-2 border-indigo-200 dark:border-indigo-800"
         />
       </motion.div>
-      
-      <motion.div className="text-center text-sm text-gray-700 mb-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
-        {language === 'english' 
-          ? 'Scan this QR code to support me directly' 
-          : 'मुझे सीधे समर्थन देने के लिए इस QR कोड को स्कैन करें'}
-      </motion.div>
 
-      <div className="mt-6 border-t border-gray-200 pt-6">
-        <motion.div 
-          className="text-center mb-4" 
-          initial={{ opacity: 0, y: -10 }} 
-          animate={{ opacity: 1, y: 0 }} 
-          transition={{ delay: 0.6 }}
+      <p className="text-sm text-center text-gray-500 dark:text-gray-400 mb-4">
+        {language === 'english' 
+          ? 'Share to help me promote my website and support my education' 
+          : 'मेरी वेबसाइट को प्रमोट करने और मेरी शिक्षा का समर्थन करने में मदद करें'}
+      </p>
+
+      <div className="flex justify-center">
+        <motion.button 
+          className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleShare}
         >
-          <p className="text-sm font-medium text-gray-900">
-            {language === 'english' ? 'Share with others' : 'दूसरों के साथ साझा करें'}
-          </p>
-        </motion.div>
-        <div className="flex justify-center space-x-4">
-          <motion.button 
-            className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 shadow-md" 
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={handleShare}
-          >
-            <Share2 size={18} />
-          </motion.button>
-        </div>
+          <Share2 size={18} />
+          <span>
+            {language === 'english' ? 'Share' : 'साझा करें'}
+          </span>
+        </motion.button>
       </div>
     </motion.div>
   );
