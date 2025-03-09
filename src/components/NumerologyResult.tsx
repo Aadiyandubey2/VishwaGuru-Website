@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
+import { Mail } from 'lucide-react';
 import { NumerologyResult as NumerologyResultType, Language } from '../types';
 import { destinyInterpretations, lifePathInterpretations, getInterpretation } from '../data/interpretations';
+import SaveReadingButton from './SaveReadingButton';
+import { useAuth } from '../utils/AuthContext';
+import { useNotification } from '../utils/NotificationContext';
+import { sendPromotionalEmail } from '../utils/emailService';
 
 interface NumerologyResultProps {
-  result: NumerologyResultType | null;
+  result: NumerologyResultType;
   language: Language;
+  name: string;
+  birthdate: string;
 }
 
 const fadeIn = {
@@ -14,7 +21,7 @@ const fadeIn = {
 };
 
 const NumberCard: React.FC<{ title: string; number: number; description: string; className?: string; }> = ({ title, number, description, className = '' }) => {
-  const [isTouched, setIsTouched] = useState(false);
+  const [isTouched, setIsTouched] = React.useState(false);
 
   return (
     <motion.div 
@@ -38,7 +45,17 @@ const NumberCard: React.FC<{ title: string; number: number; description: string;
   );
 };
 
-const NumerologyResultDisplay: React.FC<NumerologyResultProps> = ({ result, language }) => {
+const NumerologyResultDisplay: React.FC<NumerologyResultProps> = ({
+  result,
+  language,
+  name,
+  birthdate
+}) => {
+  const { user } = useAuth();
+  const { showNotification } = useNotification();
+  const [emailSent, setEmailSent] = React.useState(false);
+  const [sending, setSending] = React.useState(false);
+
   if (!result) return null;
 
   const destinyInterp = getInterpretation(result.destinyNumber, destinyInterpretations);
@@ -48,72 +65,179 @@ const NumerologyResultDisplay: React.FC<NumerologyResultProps> = ({ result, lang
     ? 'Prediction will come in further updates.' 
     : 'भविष्यवाणी आगामी अपडेट में उपलब्ध होगी।';
 
+  const handleSendEmail = async () => {
+    if (!user?.email || emailSent) return;
+
+    setSending(true);
+    try {
+      const success = await sendPromotionalEmail(
+        user.email,
+        name,
+        language,
+        result
+      );
+
+      if (success) {
+        setEmailSent(true);
+        showNotification('success', language === 'english'
+          ? 'Your reading has been sent to your email!'
+          : 'आपकी रीडिंग आपके ईमेल पर भेज दी गई है!');
+      } else {
+        showNotification('error', language === 'english'
+          ? 'Failed to send email. Please try again.'
+          : 'ईमेल भेजने में विफल। कृपया पुनः प्रयास करें।');
+      }
+    } catch (error) {
+      console.error('Error sending email:', error);
+      showNotification('error', language === 'english'
+        ? 'Error sending email'
+        : 'ईमेल भेजने में त्रुटि');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100
+      }
+    }
+  };
+
+  const numberDescriptions = {
+    destinyNumber: {
+      english: "Your Destiny Number represents your life's purpose and the opportunities that await you.",
+      hindi: "आपका भाग्य अंक आपके जीवन के उद्देश्य और आपकी प्रतीक्षा कर रहे अवसरों का प्रतिनिधित्व करता है।"
+    },
+    soulUrgeNumber: {
+      english: "Your Soul Urge Number reveals your inner desires and what truly motivates you.",
+      hindi: "आपका आत्मा अंक आपकी आंतरिक इच्छाओं और आपको वास्तव में क्या प्रेरित करता है, यह दर्शाता है।"
+    },
+    personalityNumber: {
+      english: "Your Personality Number shows how others perceive you and your outer personality.",
+      hindi: "आपका व्यक्तित्व अंक दर्शाता है कि दूसरे आपको कैसे देखते हैं और आपका बाहरी व्यक्तित्व कैसा है।"
+    },
+    lifePathNumber: {
+      english: "Your Life Path Number indicates the path you'll take in life and your natural abilities.",
+      hindi: "आपका जीवन पथ अंक जीवन में आपके द्वारा लिए जाने वाले मार्ग और आपकी प्राकृतिक क्षमताओं को दर्शाता है।"
+    },
+    birthdayNumber: {
+      english: "Your Birthday Number reveals special talents and abilities you possess.",
+      hindi: "आपका जन्मदिन अंक आपके पास मौजूद विशेष प्रतिभाओं और क्षमताओं को प्रकट करता है।"
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString();
+    } catch (error) {
+      return dateString;
+    }
+  };
+
   return (
-    <motion.div className="space-y-6" initial="hidden" animate="visible" variants={fadeIn}>
-      <motion.div className="bg-indigo-50 dark:bg-indigo-900/30 p-4 rounded-lg border border-indigo-100 dark:border-indigo-800" variants={fadeIn}>
-        <h2 className="text-lg font-bold text-indigo-800 dark:text-indigo-200 mb-3">
-          {language === 'english' ? 'Your Numerology Profile' : 'आपका अंकशास्त्र प्रोफ़ाइल'}
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-          <NumberCard 
-            title={language === 'english' ? 'Destiny Number' : 'भाग्य अंक'} 
-            number={result.destinyNumber} 
-            description={destinyInterp ? (language === 'english' ? destinyInterp.englishTitle : destinyInterp.hindiTitle) : defaultDescription} 
-          />
-          <NumberCard 
-            title={language === 'english' ? 'Life Path Number' : 'जीवन पथ अंक'} 
-            number={result.lifePathNumber} 
-            description={lifePathInterp ? (language === 'english' ? lifePathInterp.englishTitle : lifePathInterp.hindiTitle) : defaultDescription} 
-          />
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <NumberCard 
-            title={language === 'english' ? 'Soul Urge Number' : 'आत्मा की इच्छा अंक'} 
-            number={result.soulUrgeNumber} 
-            description={defaultDescription} 
-          />
-          <NumberCard 
-            title={language === 'english' ? 'Personality Number' : 'व्यक्तित्व अंक'} 
-            number={result.personalityNumber} 
-            description={defaultDescription} 
-          />
-          <NumberCard 
-            title={language === 'english' ? 'Birthday Number' : 'जन्मदिन अंक'} 
-            number={result.birthdayNumber} 
-            description={defaultDescription} 
-          />
-        </div>
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6"
+    >
+      <motion.h2 
+        variants={itemVariants}
+        className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center"
+      >
+        {language === 'english' 
+          ? `Numerology Reading for ${name}`
+          : `${name} के लिए अंकशास्त्र रीडिंग`}
+      </motion.h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {(Object.keys(result) as Array<keyof NumerologyResultType>).map((key) => (
+          <motion.div
+            key={key}
+            variants={itemVariants}
+            className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6"
+          >
+            <h3 className="text-lg font-semibold text-indigo-600 dark:text-indigo-400 mb-2">
+              {language === 'english'
+                ? key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())
+                : key === 'destinyNumber' ? 'भाग्य अंक'
+                : key === 'soulUrgeNumber' ? 'आत्मा अंक'
+                : key === 'personalityNumber' ? 'व्यक्तित्व अंक'
+                : key === 'lifePathNumber' ? 'जीवन पथ अंक'
+                : 'जन्मदिन अंक'}
+            </h3>
+            <div className="flex items-center mb-4">
+              <span className="text-4xl font-bold text-gray-900 dark:text-white">
+                {result[key]}
+              </span>
+            </div>
+            <p className="text-gray-600 dark:text-gray-300 text-sm">
+              {numberDescriptions[key][language]}
+            </p>
+          </motion.div>
+        ))}
+      </div>
+
+      <motion.div
+        variants={itemVariants}
+        className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400"
+      >
+        {language === 'english'
+          ? `Reading calculated on ${formatDate(new Date().toISOString())} for birthdate: ${formatDate(birthdate)}`
+          : `${formatDate(birthdate)} की जन्मतिथि के लिए ${formatDate(new Date().toISOString())} को गणना की गई`}
       </motion.div>
 
-      <motion.div className="space-y-4" variants={fadeIn}>
-        <motion.div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md" variants={fadeIn}>
-          <h3 className="text-md font-semibold mb-2 text-indigo-800 dark:text-indigo-200">
-            {language === 'english' 
-              ? `Destiny Number ${result.destinyNumber}: ${destinyInterp?.englishTitle || 'Prediction coming soon'}` 
-              : `भाग्य अंक ${result.destinyNumber}: ${destinyInterp?.hindiTitle || 'भविष्यवाणी जल्द ही आएगी'}`}
-          </h3>
-          <p className="text-gray-700 dark:text-gray-300 text-sm">
-            {language === 'english' 
-              ? destinyInterp?.englishDescription || 'Prediction will come in further updates.' 
-              : destinyInterp?.hindiDescription || 'भविष्यवाणी आगामी अपडेट में उपलब्ध होगी।'}
-          </p>
-        </motion.div>
-
-        <motion.div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md" variants={fadeIn}>
-          <h3 className="text-md font-semibold mb-2 text-indigo-800 dark:text-indigo-200">
-            {language === 'english' 
-              ? `Life Path Number ${result.lifePathNumber}: ${lifePathInterp?.englishTitle || 'Prediction coming soon'}` 
-              : `जीवन पथ अंक ${result.lifePathNumber}: ${lifePathInterp?.hindiTitle || 'भविष्यवाणी जल्द ही आएगी'}`}
-          </h3>
-          <p className="text-gray-700 dark:text-gray-300 text-sm">
-            {language === 'english' 
-              ? lifePathInterp?.englishDescription || 'Prediction will come in further updates.' 
-              : lifePathInterp?.hindiDescription || 'भविष्यवाणी आगामी अपडेट में उपलब्ध होगी।'}
-          </p>
-        </motion.div>
-      </motion.div>
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6">
+        {user?.email && (
+          <motion.button
+            onClick={handleSendEmail}
+            disabled={emailSent || sending}
+            className={`inline-flex items-center px-4 py-2 rounded-lg text-white font-medium transition-colors ${
+              emailSent
+                ? 'bg-green-500 cursor-not-allowed'
+                : sending
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-blue-600 hover:bg-blue-700'
+            }`}
+            whileHover={!emailSent && !sending ? { scale: 1.05 } : {}}
+            whileTap={!emailSent && !sending ? { scale: 0.95 } : {}}
+          >
+            <Mail className="w-5 h-5 mr-2" />
+            {emailSent 
+              ? (language === 'english' ? 'Email Sent!' : 'ईमेल भेज दिया गया!')
+              : sending
+              ? (language === 'english' ? 'Sending...' : 'भेज रहा है...')
+              : (language === 'english' ? 'Send to Email' : 'ईमेल पर भेजें')}
+          </motion.button>
+        )}
+        {name && birthdate && (
+          <SaveReadingButton 
+            result={result} 
+            name={name} 
+            birthdate={birthdate} 
+            language={language} 
+          />
+        )}
+      </div>
     </motion.div>
   );
 };

@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Language } from '../types';
 import PersonalSupport from './auth/Personalsupport';
+import { X } from 'lucide-react';
+import NumerologyResultDisplay from './NumerologyResult';
+import { NumerologyResult } from '../types';
 
 interface NumerologyFormProps {
   onCalculate: (name: string, birthdate: string) => void;
@@ -12,6 +15,7 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
   const [name, setName] = useState('');
   const [birthdate, setBirthdate] = useState('');
   const [showQRCode, setShowQRCode] = useState(false);
+  const [result, setResult] = useState<NumerologyResult | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,37 +71,69 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
             onClick={() => setShowQRCode(true)}
             className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
           >
-            {language === 'english' ? 'Need Help?' : 'सहायता चाहिए?'}
+            {language === 'english' ? 'I Need Help' : 'मुझे मदद चाहिए'}
           </motion.button>
         </div>
       </form>
 
-      {showQRCode && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg relative max-w-md w-full">
-            <button 
-              onClick={() => setShowQRCode(false)}
-              className="absolute top-2 right-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-            >
-              ✖
-            </button>
-            
-            <h2 className="text-lg font-semibold mb-4 text-center text-gray-900 dark:text-gray-100">
-              {language === 'english' ? 'Personal Support QR Code' : 'व्यक्तिगत सहायता क्यूआर कोड'}
-            </h2>
-
-            <div className="flex justify-center">
-              <PersonalSupport language={language} />
-            </div>
-
-            <p className="text-gray-500 dark:text-gray-400 text-center mt-3">
-              {language === 'english' 
-                ? 'Scan the QR code for personalized numerology support.' 
-                : 'व्यक्तिगत अंकशास्त्र सहायता के लिए क्यूआर कोड स्कैन करें।'}
-            </p>
-          </div>
+      {result && (
+        <div className="mt-8">
+          <NumerologyResultDisplay 
+            result={result} 
+            language={language} 
+            name={name}
+            birthdate={birthdate}
+          />
         </div>
       )}
+
+      <AnimatePresence>
+        {showQRCode && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 overflow-y-auto"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setShowQRCode(false);
+              }
+            }}
+          >
+            <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+              <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
+
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                className="relative inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 rounded-lg shadow-xl"
+              >
+                <button
+                  onClick={() => setShowQRCode(false)}
+                  className="absolute top-4 right-4 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
+                >
+                  <X size={24} />
+                </button>
+
+                <h2 className="text-lg font-semibold mb-4 text-center text-gray-900 dark:text-gray-100">
+                  {language === 'english' ? 'Personal Support QR Code' : 'व्यक्तिगत सहायता क्यूआर कोड'}
+                </h2>
+
+                <div className="mt-4">
+                  <PersonalSupport language={language} />
+                </div>
+
+                <p className="mt-4 text-sm text-center text-gray-500 dark:text-gray-400">
+                  {language === 'english'
+                    ? 'Share to help me promote my website'
+                    : 'मेरी वेबसाइट को प्रमोट करने में मदद करने के लिए शेयर करें'}
+                </p>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
