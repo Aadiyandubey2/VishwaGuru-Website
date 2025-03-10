@@ -5,15 +5,13 @@
 This project is a full-stack numerology website designed to calculate and analyze numerological values based on user input. The platform provides users with insights based on numerology principles.
 
 🛠️ Tech Stack
-Frontend: HTML, JavaScript, TypeScript ,CSS(Nagaraju Sir supremacy🙏)
+Frontend: HTML, JavaScript, React.js TypeScript ,CSS(Nagaraju Sir supremacy🙏)
 
 Backend: Node.js(R.I.P. my sleep schedule)
 
 Deployment: Vercel(Gone very hard with this part)
 
-Authentication Database: MySQL(Thinking that 🤔 I know but done very poor execution)
-
-Server: Railway-Not working❌(For hosting MySQL server) 
+Authentication Database: Supabase(Thinking that 🤔 I know but done very poor execution)
 
 🚀 Features
 
