@@ -9,7 +9,7 @@ Frontend: HTML, JavaScript, React.js TypeScript ,CSS(Nagaraju Sir supremacy🙏)
 
 Backend: Node.js(R.I.P. my sleep schedule)
 
-Deployment: Vercel(Gone very hard with this part)
+Deployment: Netlify(Gone very hard with this part)
 
 Authentication Database: Supabase(Thinking that 🤔 I know but done very poor execution)
 
