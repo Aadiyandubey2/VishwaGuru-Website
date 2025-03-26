@@ -41,17 +41,22 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
       className="bg-white dark:bg-gray-800 shadow-md border-b border-gray-200 dark:border-gray-700 w-full"
     >
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <Link to="/" className="flex items-center space-x-2">
-          <div className="h-10 w-auto flex items-center justify-center bg-transparent dark:bg-transparent rounded-lg p-1">
+        <Link to="/" className="flex items-center space-x-4">
+          <div className="h-12 w-auto flex items-center justify-center bg-transparent dark:bg-transparent rounded-lg p-1">
             <img 
               src="/VishwaGuruLogo.png"
               alt="VishwaGuru Logo" 
               className="h-full w-auto object-contain dark:invert"
             />
           </div>
-          <h1 className={`text-lg sm:text-xl font-bold bg-[length:200%_auto] animate-rainbow-text bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-indigo-500 to-purple-500 hover:from-purple-500 hover:via-pink-500 hover:to-indigo-500 transition-all duration-500 leading-relaxed ${language === 'english' ? '' : 'font-hindi'}`}>
-            {language === 'english' ? 'VishwaGuru' : 'विश्वगुरु'}
-          </h1>
+          <div className="flex items-center">
+            <h1 className={`text-2xl font-bold relative ${language === 'english' ? '' : 'font-hindi'}`}>
+              <span className="bg-gradient-to-r from-orange-500 via-blue-600 to-green-500 bg-clip-text text-transparent animate-gradient-x">
+                {language === 'english' ? 'VishwaGuru' : 'विश्वगुरु'}
+              </span>
+              <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-orange-500 via-blue-600 to-green-500"></div>
+            </h1>
+          </div>
         </Link>
 
         <div className="hidden md:flex items-center space-x-4">

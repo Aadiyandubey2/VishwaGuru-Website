@@ -68,19 +68,16 @@ function Home({ language }: { language: Language }) {
           transition={{ duration: 0.8, type: "spring", stiffness: 100 }}
           className="text-center mb-12"
         >
-          <div className="flex items-center justify-center mb-4">
-            <div className="h-16 w-auto flex items-center justify-center bg-transparent dark:bg-transparent rounded-lg p-2">
+          <div className="flex items-center justify-center mb-8">
+            <div className="h-48 md:h-64 lg:h-80 w-auto flex items-center justify-center bg-transparent dark:bg-transparent rounded-lg p-4">
               <img 
                 src="/VishwaGuruLogo.png"
                 alt="VishwaGuru Logo" 
-                className="h-full w-auto object-contain dark:invert"
+                className="h-full w-auto object-contain dark:invert transform hover:scale-105 transition-transform duration-300"
               />
             </div>
           </div>
-          <h1 className={`text-4xl font-extrabold bg-[length:200%_auto] animate-rainbow-text bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-indigo-500 to-purple-500 hover:from-purple-500 hover:via-pink-500 hover:to-indigo-500 transition-all duration-500 ${language === 'english' ? '' : 'font-hindi'}`}>
-            {language === 'english' ? 'VishwaGuru' : 'विश्वगुरु'}
-          </h1>
-          <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto text-xl mt-4">
+          <p className="text-gray-600 dark:text-gray-300 max-w-3xl mx-auto text-xl md:text-2xl mt-8">
             {language === 'english' 
               ? 'Discover the hidden meanings in your name and birthdate through the ancient science of numerology.'
               : 'अंकशास्त्र के प्राचीन विज्ञान के माध्यम से अपने नाम और जन्मतिथि में छिपे अर्थों की खोज करें।'}
