@@ -84,9 +84,9 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
               className="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2"
             >
               <img 
-                src="/VishwaGuruLogo.png"
+                src="/vishwa.png"
                 alt="VishwaGuru Logo" 
-                className="w-7 h-7 object-contain dark:invert"
+                className="w-12 h-12 object-contain dark:invert"
               />
               {language === 'english' ? 'Full Name' : 'पूरा नाम'}
             </label>
@@ -110,9 +110,9 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
               className="absolute -right-2 -top-2"
             >
               <img 
-                src="/VishwaGuruLogo.png"
+                src="/vishwa.png"
                 alt="VishwaGuru Logo" 
-                className="w-8 h-8 object-contain dark:invert"
+                className="w-12 h-12 object-contain dark:invert"
               />
             </motion.div>
           </motion.div>
@@ -134,9 +134,9 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
               className="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2"
             >
               <img 
-                src="/VishwaGuruLogo.png"
+                src="/vishwa.png"
                 alt="VishwaGuru Logo" 
-                className="w-7 h-7 object-contain dark:invert"
+                className="w-12 h-12 object-contain dark:invert"
               />
               {language === 'english' ? 'Date of Birth' : 'जन्म तिथि'}
             </label>
@@ -159,9 +159,9 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
               className="absolute -right-2 -top-2"
             >
               <img 
-                src="/VishwaGuruLogo.png"
+                src="/vishwa.png"
                 alt="VishwaGuru Logo" 
-                className="w-8 h-8 object-contain dark:invert"
+                className="w-12 h-12 object-contain dark:invert"
               />
             </motion.div>
           </motion.div>
@@ -180,9 +180,9 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
           >
             <span className="flex items-center gap-2">
               <img 
-                src="/VishwaGuruLogo.png"
+                src="/vishwa.png"
                 alt="VishwaGuru Logo" 
-                className="w-7 h-7 object-contain invert"
+                className="w-12 h-12 object-contain invert"
               />
               {language === 'english' ? 'Calculate' : 'गणना करें'}
             </span>
