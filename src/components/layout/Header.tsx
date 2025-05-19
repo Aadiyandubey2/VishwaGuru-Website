@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, LogOut, LayoutDashboard } from 'lucide-react';
+import { Menu, X, LogOut, LayoutDashboard, Hand } from 'lucide-react';
 import LanguageToggle from '../LanguageToggle';
 import ThemeToggle from '../ThemeToggle';
 import { Language } from '../../types';
@@ -42,11 +42,11 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
     >
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-4">
-          <div className="h-12 w-auto flex items-center justify-center bg-transparent dark:bg-transparent rounded-lg p-1">
+          <div className="h-16 w-16 flex items-center justify-center bg-transparent dark:bg-transparent">
             <img 
-              src="/VishwaGuruLogo.png"
+              src="/vishwa.png"
               alt="VishwaGuru Logo" 
-              className="h-full w-auto object-contain dark:invert"
+              className="w-full h-full object-contain dark:invert"
             />
           </div>
           <div className="flex items-center">
@@ -62,15 +62,21 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
         <div className="hidden md:flex items-center space-x-4">
           <LanguageToggle language={language} setLanguage={onLanguageChange} />
           <ThemeToggle />
-          
           {user ? (
             <div className="flex items-center space-x-4">
               <Link
                 to="/dashboard"
-                className="flex items-center space-x-1 text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                className="flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200 dark:hover:bg-indigo-800 transition"
               >
-                <LayoutDashboard size={16} />
-                <span>{language === 'english' ? 'Dashboard' : 'डैशबोर्ड'}</span>
+                <LayoutDashboard size={18} className="mr-2" />
+                {language === 'english' ? 'Dashboard' : 'डैशबोर्ड'}
+              </Link>
+              <Link
+                to="/palm-reading"
+                className="flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-green-50 hover:bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800 transition"
+              >
+                <Hand size={18} className="mr-2" />
+                {language === 'english' ? 'Palm Reading' : 'हस्तरेखा'}
               </Link>
               <span className="text-sm text-gray-600 dark:text-gray-300">
                 {user.email}
@@ -138,13 +144,20 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
               <ThemeToggle />
               
               {user ? (
-                <div className="flex flex-col items-center space-y-2">
+                <div className="flex flex-col items-center space-y-2 w-full">
                   <Link
                     to="/dashboard"
-                    className="flex items-center space-x-1 text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                    className="flex items-center w-full justify-center px-4 py-2 rounded-md text-sm font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200 dark:hover:bg-indigo-800 transition"
                   >
-                    <LayoutDashboard size={16} />
-                    <span>{language === 'english' ? 'Dashboard' : 'डैशबोर्ड'}</span>
+                    <LayoutDashboard size={18} className="mr-2" />
+                    {language === 'english' ? 'Dashboard' : 'डैशबोर्ड'}
+                  </Link>
+                  <Link
+                    to="/palm-reading"
+                    className="flex items-center w-full justify-center px-4 py-2 rounded-md text-sm font-semibold bg-green-50 hover:bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800 transition"
+                  >
+                    <Hand size={18} className="mr-2" />
+                    {language === 'english' ? 'Palm Reading' : 'हस्तरेखा'}
                   </Link>
                   <span className="text-sm text-gray-600 dark:text-gray-300">
                     {user.email}

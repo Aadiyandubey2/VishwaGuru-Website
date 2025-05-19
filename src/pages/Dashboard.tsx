@@ -101,20 +101,62 @@ const Dashboard: React.FC<DashboardProps> = ({ language }) => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
-          {language === 'english' ? 'Your Saved Readings' : 'आपकी सहेजी गई रीडिंग्स'}
-        </h1>
+        <div className="flex flex-col items-center mb-12">
+          <motion.img
+            src="/VishwaGuruDashboardLogo.svg"
+            alt="VishwaGuru Logo"
+            className="w-24 h-24 mb-6 dark:invert"
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          />
+          <motion.h1 
+            className="text-4xl font-bold text-gray-900 dark:text-white text-center"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+          >
+            {language === 'english' ? 'Your Spiritual Journey' : 'आपकी आध्यात्मिक यात्रा'}
+          </motion.h1>
+          <motion.p 
+            className="mt-2 text-lg text-gray-600 dark:text-gray-400 text-center"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
+            {language === 'english' 
+              ? 'Explore your numerological readings and insights'
+              : 'अपनी संख्यात्मक पठन और अंतर्दृष्टि का अन्वेषण करें'}
+          </motion.p>
+        </div>
 
         {loading ? (
-          <div className="text-center text-gray-600 dark:text-gray-400">
+          <motion.div 
+            className="text-center text-gray-600 dark:text-gray-400"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
             {language === 'english' ? 'Loading...' : 'लोड हो रहा है...'}
-          </div>
+          </motion.div>
         ) : readings.length === 0 ? (
-          <div className="text-center text-gray-600 dark:text-gray-400">
-            {language === 'english' 
-              ? 'No saved readings yet. Calculate a reading to save it here!'
-              : 'अभी तक कोई सहेजी गई रीडिंग नहीं है। यहां सहेजने के लिए एक रीडिंग की गणना करें!'}
-          </div>
+          <motion.div 
+            className="text-center p-8 rounded-lg bg-white dark:bg-gray-800 shadow-md"
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <img
+              src="/VishwaGuruDashboardLogo.svg"
+              alt="Empty state"
+              className="w-16 h-16 mx-auto mb-4 opacity-50 dark:invert"
+            />
+            <p className="text-gray-600 dark:text-gray-400">
+              {language === 'english' 
+                ? 'No saved readings yet. Calculate a reading to begin your spiritual journey!'
+                : 'अभी तक कोई सहेजी गई रीडिंग नहीं है। अपनी आध्यात्मिक यात्रा शुरू करने के लिए एक रीडिंग की गणना करें!'}
+            </p>
+          </motion.div>
         ) : (
           <div className="space-y-6">
             {readings.map((reading) => {

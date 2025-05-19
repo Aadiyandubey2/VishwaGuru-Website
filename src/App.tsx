@@ -18,6 +18,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
+import PalmReadingPage from './pages/PalmReadingPage';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 
@@ -69,7 +70,7 @@ function Home({ language }: { language: Language }) {
           className="text-center mb-12"
         >
           <div className="flex items-center justify-center mb-8">
-            <div className="h-48 md:h-64 lg:h-80 w-auto flex items-center justify-center bg-transparent dark:bg-transparent rounded-lg p-4">
+            <div className="h-64 md:h-80 lg:h-96 w-auto flex items-center justify-center bg-transparent dark:bg-transparent rounded-lg p-4">
               <img 
                 src="/VishwaGuruLogo.png"
                 alt="VishwaGuru Logo" 
@@ -156,6 +157,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <Dashboard language={language} />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/palm-reading"
+                  element={
+                    <ProtectedRoute>
+                      <PalmReadingPage language={language} />
                     </ProtectedRoute>
                   }
                 />
