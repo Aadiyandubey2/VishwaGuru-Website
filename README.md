@@ -1,98 +1,67 @@
-VishwaGuru Website
+📊 VishwaGuru Website
 
-📚 Overview
+📌 Overview
 
 This project is a full-stack numerology website designed to calculate and analyze numerological values based on user input. The platform provides users with insights based on numerology principles.
 
-💪 Tech Stack
+🛠️ Tech Stack
+Frontend: HTML, JavaScript, React.js TypeScript ,CSS(Nagaraju Sir supremacy🙏)
 
-- **Frontend:** HTML, JavaScript, React.js, TypeScript, CSS *(Nagaraju Sir supremacy 🙏)*
+Backend: Node.js(R.I.P. my sleep schedule)
 
-- **Backend:** Node.js *(R.I.P. my sleep schedule)*
+Deployment: Netlify(Gone very hard with this part)
 
-- **Deployment:** Netlify *(Gone very hard with this part)*
+Authentication Database: Supabase(Thinking that 🤔 I know but done very poor execution)
 
-- **Authentication Database:** Supabase *(Thinking that 🤔 I know but done very poor execution)*
+🚀 Features
 
-✨ Features
+Numerology calculations for names, dates, and other inputs also added support for hindi language.
 
-- Numerology calculations for names, dates, and other inputs
+Dynamic UI with CSS. Blue font used because its my favourite.
 
-- Added support for Hindi language
+📂 Project Structure
 
-- **Dynamic UI** with CSS *(Blue font used because it's my favorite)*
+📦 Numerology-Website
 
-- **SEO Enhancements** to improve visibility and ranking
+├── 📂 src              # Source files
 
-- **Logo Addition:** *VishwaGuruLogo.png added for branding*
+├── 📂 dist             # Build output
 
-🛠️ Project Structure
+├── 📜 index.html       # Main entry point
 
-Numerology-Website
+├── 📜 config.json      # Configuration file
 
-- 📚 `src/` - Source files
+├── 📜 package.json     # Dependencies and scripts
 
-- 📚 `dist/` - Build output
+├── 📜 tailwind.config.js  # CSS configuration
 
-- 📚 `public/` - Static assets (Updated for logo & SEO)
+├── 📜 eslint.config.js # ESLint configuration
 
-- 📚 `index.html` - Main entry point (Updated for SEO)
+├── 📜 vite.config.ts   # Vite configuration
 
-- 📚 `config.json` - Configuration file
+├── 📜 tsconfig.json    # TypeScript configuration
 
-- 📚 `package.json` - Dependencies and scripts (Updated for logo)
+└── 📜 .gitignore       # Git ignored files
 
-- 📚 `tailwind.config.js` - CSS configuration (Updated for SEO)
-
-- 📚 `eslint.config.js` - ESLint configuration
-
-- 📚 `vite.config.ts` - Vite configuration
-
-- 📚 `tsconfig.json` - TypeScript configuration
-
-- 📚 `sitemap.xml` - (Updated for SEO improvements)
-
-- 📚 `.gitignore` - Git ignored files
-
-- 📚 `VishwaGuruLogo.png` - Newly added logo
-
-⚡ How to Run Locally (Please test and give your reaction)
+📌 How to Run Locally(Please test and give your reaction)
 
 1. Clone the repository
 
-   ```sh
+git clone
+ https://github.com/Aadiyandubey2/Numerology-Website.git
 
-   git clone https://github.com/Aadiyandubey2/Numerology-Website.git
-
-   cd Numerology-Website
-
-   ```
+cd Numerology-Website
 
 2. Install dependencies
 
-   ```sh
-
-   npm install
-
-   ```
+npm install
 
 3. Run the project
- 
-   ```sh
 
-   npm run dev
-
-   ```
+npm run dev
 
 4. Build for production
 
-   ```sh
+npm run build
 
-   npm run build
-
-   ```
-
-
----
-Insta ID: aadiyan_dubey0
-
+Insta ID:- aadiyan_dubey0
