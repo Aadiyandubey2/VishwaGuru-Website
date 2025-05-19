@@ -42,11 +42,11 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
     >
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-4">
-          <div className="h-12 w-auto flex items-center justify-center bg-transparent dark:bg-transparent rounded-lg p-1">
+          <div className="h-16 w-16 flex items-center justify-center bg-transparent dark:bg-transparent">
             <img 
-              src="/VishwaGuruLogo.png"
+              src="/vishwa.png"
               alt="VishwaGuru Logo" 
-              className="h-full w-auto object-contain dark:invert"
+              className="w-full h-full object-contain dark:invert"
             />
           </div>
           <div className="flex items-center">
