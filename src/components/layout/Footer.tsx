@@ -82,35 +82,52 @@ const Footer: React.FC<FooterProps> = ({ language }) => {
             : '© विश्वगुरु वेबसाइट। सर्वाधिकार सुरक्षित। स्वामी आदियन दुबे'}
         </motion.p>
         
-        <div className="flex flex-wrap justify-center gap-4 mt-6 max-w-full">
-          {socialLinks.map((link, index) => (
-            <motion.a
-              key={index}
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              whileHover={{ 
-                scale: 1.1,
-                transition: { duration: 0.2 }
-              }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ 
-                delay: index * 0.2,
-                type: "spring",
-                stiffness: 300
-              }}
-              className={`
-                relative flex items-center space-x-2 px-3 py-2 rounded-full 
-                text-white shadow-lg transition-all duration-300 
-                ${link.colors.bg} hover:shadow-xl dark:shadow-gray-900/50
-              `}
-            >
-              <link.icon size={18} strokeWidth={2} />
-              <span className="text-sm font-medium">{link.name}</span>
-            </motion.a>
-          ))}
+        <div className="w-full flex justify-center mt-6">
+          <div className="grid grid-cols-4 gap-4 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl">
+            {socialLinks.map((link, index) => (
+              <motion.a
+                key={index}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                whileHover={{ 
+                  scale: 1.13,
+                  boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
+                  filter: "brightness(1.15) drop-shadow(0 0 12px #fff7)"
+                }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ 
+                  delay: index * 0.18,
+                  type: "spring",
+                  stiffness: 300
+                }}
+                className={`
+                  relative flex flex-col items-center justify-center px-0 py-2 rounded-xl
+                  text-white shadow-2xl border border-white/30
+                  bg-white/20 dark:bg-gray-900/30
+                  backdrop-blur-md
+                  transition-all duration-300
+                  ${link.colors.bg} hover:shadow-3xl dark:shadow-gray-900/60
+                  before:absolute before:inset-0 before:rounded-xl before:bg-white/10 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300
+                  overflow-hidden
+                  min-w-[90px] max-w-[120px] w-full h-[48px]
+                `}
+                style={{
+                  boxShadow: "0 4px 24px 0 rgba(31, 38, 135, 0.17)",
+                  zIndex: 1
+                }}
+              >
+                <span className="relative z-10 flex items-center justify-center w-6 h-6 rounded-full bg-white/30 backdrop-blur-sm shadow-md mb-1">
+                  <link.icon size={18} strokeWidth={2} className="drop-shadow-lg" />
+                </span>
+                <span className="relative z-10 text-sm font-semibold drop-shadow-sm">
+                  {link.name}
+                </span>
+              </motion.a>
+            ))}
+          </div>
         </div>
       </div>
       
