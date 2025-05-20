@@ -77,8 +77,8 @@ const Dashboard: React.FC<DashboardProps> = ({ language }) => {
         <div className="bg-white rounded-xl shadow-lg overflow-hidden p-8 mb-8 text-center">
           <p className="text-lg text-gray-600">
             {language === 'english' 
-              ? 'Please log in to view your dashboard.' 
-              : 'अपना डैशबोर्ड देखने के लिए कृपया लॉग इन करें।'}
+              ? 'Please log in to view the full readings with complete predictions in your dashboard.' 
+              : 'अपने डैशबोर्ड में पूर्ण भविष्यवाणियों के साथ पूर्ण पठन देखने के लिए कृपया लॉग इन करें।'}
           </p>
         </div>
       </div>

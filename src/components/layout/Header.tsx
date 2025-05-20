@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, LogOut, LayoutDashboard } from 'lucide-react';
+import { Menu, X, LogOut, LayoutDashboard, Hand, Calculator } from 'lucide-react';
 import LanguageToggle from '../LanguageToggle';
 import ThemeToggle from '../ThemeToggle';
 import { Language } from '../../types';
@@ -42,11 +42,11 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
     >
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-4">
-          <div className="h-12 w-auto flex items-center justify-center bg-transparent dark:bg-transparent rounded-lg p-1">
+          <div className="h-16 w-16 flex items-center justify-center bg-transparent dark:bg-transparent">
             <img 
-              src="/VishwaGuruLogo.png"
+              src="/vishwa.png"
               alt="VishwaGuru Logo" 
-              className="h-full w-auto object-contain dark:invert"
+              className="w-full h-full object-contain dark:invert"
             />
           </div>
           <div className="flex items-center">
@@ -59,19 +59,41 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
           </div>
         </Link>
 
-        <div className="hidden md:flex items-center space-x-4">
+        {/* Language & Theme toggles always visible on mobile */}
+        <div className="flex items-center space-x-2 md:hidden">
           <LanguageToggle language={language} setLanguage={onLanguageChange} />
           <ThemeToggle />
-          
+        </div>
+
+        {/* Navigation, toggles, and user info (desktop) */}
+        <div className="hidden md:flex items-center space-x-2 md:space-x-4">
+          <Link
+            to="/numerology"
+            className="flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-purple-50 hover:bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200 dark:hover:bg-purple-800 transition"
+          >
+            <Calculator size={18} className="mr-2" />
+            {language === 'english' ? 'Numerology' : 'अंकशास्त्र'}
+          </Link>
+          <Link
+            to="/palm-reading"
+            className="flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-green-50 hover:bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800 transition"
+          >
+            <Hand size={18} className="mr-2" />
+            {language === 'english' ? 'Palm Reading' : 'हस्तरेखा'}
+          </Link>
+          {user && (
+            <Link
+              to="/dashboard"
+              className="flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200 dark:hover:bg-indigo-800 transition"
+            >
+              <LayoutDashboard size={18} className="mr-2" />
+              {language === 'english' ? 'Dashboard' : 'डैशबोर्ड'}
+            </Link>
+          )}
+          <LanguageToggle language={language} setLanguage={onLanguageChange} />
+          <ThemeToggle />
           {user ? (
-            <div className="flex items-center space-x-4">
-              <Link
-                to="/dashboard"
-                className="flex items-center space-x-1 text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
-              >
-                <LayoutDashboard size={16} />
-                <span>{language === 'english' ? 'Dashboard' : 'डैशबोर्ड'}</span>
-              </Link>
+            <>
               <span className="text-sm text-gray-600 dark:text-gray-300">
                 {user.email}
               </span>
@@ -82,9 +104,9 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
                 <LogOut size={16} />
                 <span>{language === 'english' ? 'Sign Out' : 'साइन आउट'}</span>
               </button>
-            </div>
+            </>
           ) : (
-            <div className="flex items-center space-x-4">
+            <>
               <Link
                 to="/login"
                 className="text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
@@ -97,9 +119,8 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
               >
                 {language === 'english' ? 'Sign Up' : 'साइन अप'}
               </Link>
-            </div>
+            </>
           )}
-          
           {/* Owner Info */}
           <div className="flex items-center space-x-3 border-l border-gray-200 dark:border-gray-700 pl-4">
             <div className="w-8 h-8 rounded-full overflow-hidden">
@@ -117,6 +138,7 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
           </div>
         </div>
 
+        {/* Hamburger menu for mobile */}
         <button 
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="md:hidden flex items-center text-indigo-600 dark:text-indigo-400"
@@ -134,29 +156,44 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
             className="md:hidden bg-white dark:bg-gray-800 shadow-md border-t border-gray-200 dark:border-gray-700"
           >
             <div className="flex flex-col items-center py-4 space-y-3">
-              <LanguageToggle language={language} setLanguage={onLanguageChange} />
-              <ThemeToggle />
-              
-              {user ? (
-                <div className="flex flex-col items-center space-y-2">
+              <div className="flex flex-row items-center gap-2">
+                <Link
+                  to="/numerology"
+                  className="flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-purple-50 hover:bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200 dark:hover:bg-purple-800 transition"
+                >
+                  <Calculator size={18} className="mr-2" />
+                  {language === 'english' ? 'Numerology' : 'अंकशास्त्र'}
+                </Link>
+                {user && (
                   <Link
                     to="/dashboard"
-                    className="flex items-center space-x-1 text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                    className="flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200 dark:hover:bg-indigo-800 transition"
                   >
-                    <LayoutDashboard size={16} />
-                    <span>{language === 'english' ? 'Dashboard' : 'डैशबोर्ड'}</span>
+                    <LayoutDashboard size={18} className="mr-2" />
+                    {language === 'english' ? 'Dashboard' : 'डैशबोर्ड'}
                   </Link>
-                  <span className="text-sm text-gray-600 dark:text-gray-300">
+                )}
+                <Link
+                  to="/palm-reading"
+                  className="flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-green-50 hover:bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800 transition"
+                >
+                  <Hand size={18} className="mr-2" />
+                  {language === 'english' ? 'Palm Reading' : 'हस्तरेखा'}
+                </Link>
+              </div>
+              {user ? (
+                <>
+                  <span className="text-sm text-gray-600 dark:text-gray-300 mt-2 block">
                     {user.email}
                   </span>
                   <button
                     onClick={handleSignOut}
-                    className="flex items-center space-x-1 text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                    className="flex items-center space-x-1 text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 mt-2"
                   >
                     <LogOut size={16} />
                     <span>{language === 'english' ? 'Sign Out' : 'साइन आउट'}</span>
                   </button>
-                </div>
+                </>
               ) : (
                 <div className="flex flex-col items-center space-y-2">
                   <Link
@@ -173,7 +210,6 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
                   </Link>
                 </div>
               )}
-              
               {/* Owner Info in Mobile Menu */}
               <div className="flex items-center space-x-3 pt-2">
                 <div className="w-8 h-8 rounded-full overflow-hidden">

@@ -7,14 +7,12 @@ function generateSitemap() {
     
     const baseUrl = 'https://www.vishwaguru.site';
     const pages = [
-      // Main Routes
       { url: '/', changefreq: 'daily', priority: '1.0' },
-      { url: '/personal-support', changefreq: 'monthly', priority: '0.8' },
-      
-      // Main Sections (using hash fragments for single-page navigation)
-      { url: '/#numerology-calculator', changefreq: 'daily', priority: '0.9' },
-      { url: '/#numerology-results', changefreq: 'daily', priority: '0.9' },
-      { url: '/#language-selector', changefreq: 'monthly', priority: '0.7' }
+      { url: '/numerology', changefreq: 'daily', priority: '1.0' },
+      { url: '/palm-reading', changefreq: 'daily', priority: '1.0' },
+      { url: '/dashboard', changefreq: 'daily', priority: '0.9' },
+      { url: '/login', changefreq: 'weekly', priority: '0.8' },
+      { url: '/signup', changefreq: 'weekly', priority: '0.8' },
     ];
 
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
