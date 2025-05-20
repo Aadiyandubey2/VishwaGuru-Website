@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import NumerologyForm from './components/NumerologyForm';
 import NumerologyResultDisplay from './components/NumerologyResult';
@@ -18,10 +18,13 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
+import PalmReadingPage from './pages/PalmReadingPage';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
+import { Calculator, Hand } from 'lucide-react';
+import { Helmet } from 'react-helmet';
 
-function Home({ language }: { language: Language }) {
+function NumerologyPage({ language }: { language: Language }) {
   const { showNotification } = useNotification();
   const [name, setName] = useState(() => localStorage.getItem('userName') || '');
   const [birthdate, setBirthdate] = useState(() => localStorage.getItem('userBirthdate') || '');
@@ -61,6 +64,20 @@ function Home({ language }: { language: Language }) {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <Helmet>
+        <title>Numerology Calculator - VishwaGuru</title>
+        <meta name="description" content="Discover your destiny, life path, and more with our free numerology calculator. Instant, accurate, and personalized readings online." />
+        <link rel="canonical" href="https://www.vishwaguru.site/numerology" />
+        <meta property="og:title" content="Numerology Calculator - VishwaGuru" />
+        <meta property="og:description" content="Discover your destiny, life path, and more with our free numerology calculator. Instant, accurate, and personalized readings online." />
+        <meta property="og:url" content="https://www.vishwaguru.site/numerology" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://www.vishwaguru.site/VishwaGuruLogo.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Numerology Calculator - VishwaGuru" />
+        <meta name="twitter:description" content="Discover your destiny, life path, and more with our free numerology calculator. Instant, accurate, and personalized readings online." />
+        <meta name="twitter:image" content="https://www.vishwaguru.site/VishwaGuruLogo.png" />
+      </Helmet>
       <div className="container mx-auto px-4 py-12">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -69,7 +86,7 @@ function Home({ language }: { language: Language }) {
           className="text-center mb-12"
         >
           <div className="flex items-center justify-center mb-8">
-            <div className="h-48 md:h-64 lg:h-80 w-auto flex items-center justify-center bg-transparent dark:bg-transparent rounded-lg p-4">
+            <div className="h-64 md:h-80 lg:h-96 w-auto flex items-center justify-center bg-transparent dark:bg-transparent rounded-lg p-4">
               <img 
                 src="/VishwaGuruLogo.png"
                 alt="VishwaGuru Logo" 
@@ -131,6 +148,78 @@ function Home({ language }: { language: Language }) {
   );
 }
 
+function Home({ language }: { language: Language }) {
+  const featureCards = [
+    {
+      label: { en: 'Numerology', hi: 'अंकशास्त्र' },
+      icon: <Calculator size={48} />,
+      to: '/numerology',
+      color: 'from-indigo-500 to-blue-500',
+    },
+    {
+      label: { en: 'Palm Reading', hi: 'हस्तरेखा' },
+      icon: <Hand size={48} />,
+      to: '/palm-reading',
+      color: 'from-green-500 to-emerald-500',
+    },
+  ];
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <Helmet>
+        <title>VishwaGuru - Numerology & Palmistry Hub</title>
+        <meta name="description" content="Explore numerology and palmistry online. Get instant readings, save your results, and discover your spiritual path with VishwaGuru." />
+        <link rel="canonical" href="https://www.vishwaguru.site/" />
+        <meta property="og:title" content="VishwaGuru - Numerology & Palmistry Hub" />
+        <meta property="og:description" content="Explore numerology and palmistry online. Get instant readings, save your results, and discover your spiritual path with VishwaGuru." />
+        <meta property="og:url" content="https://www.vishwaguru.site/" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://www.vishwaguru.site/VishwaGuruLogo.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="VishwaGuru - Numerology & Palmistry Hub" />
+        <meta name="twitter:description" content="Explore numerology and palmistry online. Get instant readings, save your results, and discover your spiritual path with VishwaGuru." />
+        <meta name="twitter:image" content="https://www.vishwaguru.site/VishwaGuruLogo.png" />
+      </Helmet>
+      <div className="flex flex-col items-center mb-10">
+        <div className="h-64 md:h-80 lg:h-96 w-auto flex items-center justify-center bg-transparent dark:bg-transparent rounded-lg p-4">
+          <img 
+            src="/VishwaGuruLogo.png"
+            alt="VishwaGuru Logo" 
+            className="h-full w-auto object-contain dark:invert transform hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+        <h1 className="text-4xl font-bold mt-4 text-center text-gray-900 dark:text-white">
+          {language === 'english' ? 'Welcome to VishwaGuru' : 'विश्वगुरु में आपका स्वागत है'}
+        </h1>
+      </div>
+      <div className="flex flex-col sm:flex-row gap-8">
+        {featureCards.map((card, idx) => (
+          <Link to={card.to} key={card.to} className="focus:outline-none">
+            <motion.div
+              whileHover={{ scale: 1.08, rotate: 2 }}
+              whileTap={{ scale: 0.97 }}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.15, type: 'spring', stiffness: 120 }}
+              className={`flex flex-col items-center justify-center px-10 py-8 rounded-3xl shadow-2xl bg-gradient-to-br ${card.color} text-white font-bold text-2xl cursor-pointer select-none`}
+              style={{
+                minWidth: 220,
+                minHeight: 180,
+                boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+                backdropFilter: 'blur(8px)',
+                border: '1.5px solid rgba(255,255,255,0.18)',
+              }}
+            >
+              <div className="mb-4">{card.icon}</div>
+              <span className="text-2xl">{card.label[language === 'english' ? 'en' : 'hi']}</span>
+            </motion.div>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [language, setLanguage] = useState<Language>(() => 
     localStorage.getItem('language') as Language || 'english'
@@ -149,6 +238,7 @@ function App() {
             <main className="flex-grow">
               <Routes>
                 <Route path="/" element={<Home language={language} />} />
+                <Route path="/numerology" element={<NumerologyPage language={language} />} />
                 <Route path="/login" element={<Login language={language} />} />
                 <Route path="/signup" element={<Signup language={language} />} />
                 <Route
@@ -158,6 +248,10 @@ function App() {
                       <Dashboard language={language} />
                     </ProtectedRoute>
                   }
+                />
+                <Route
+                  path="/palm-reading"
+                  element={<PalmReadingPage language={language} />}
                 />
                 <Route path="*" element={<Navigate to="/" />} />
               </Routes>

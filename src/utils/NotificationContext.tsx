@@ -29,10 +29,10 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const showNotification = useCallback((type: NotificationType, message: string) => {
     const id = Date.now();
-    setNotifications(prev => [...prev, { id, type, message }]);
+    setNotifications([{ id, type, message }]); // Only one notification at a time
     setTimeout(() => {
-      setNotifications(prev => prev.filter(notification => notification.id !== id));
-    }, 5000); // Remove after 5 seconds
+      setNotifications([]);
+    }, 5000);
   }, []);
 
   return (

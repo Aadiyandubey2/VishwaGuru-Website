@@ -7,22 +7,27 @@ function generateSitemap() {
     
     const baseUrl = 'https://www.vishwaguru.site';
     const pages = [
-      // Main Routes
       { url: '/', changefreq: 'daily', priority: '1.0' },
-      { url: '/personal-support', changefreq: 'monthly', priority: '0.8' },
-      
-      // Main Sections (using hash fragments for single-page navigation)
-      { url: '/#numerology-calculator', changefreq: 'daily', priority: '0.9' },
-      { url: '/#numerology-results', changefreq: 'daily', priority: '0.9' },
-      { url: '/#language-selector', changefreq: 'monthly', priority: '0.7' }
+      { url: '/numerology', changefreq: 'daily', priority: '1.0' },
+      { url: '/palm-reading', changefreq: 'daily', priority: '1.0' },
+      { url: '/dashboard', changefreq: 'daily', priority: '0.9' },
+      { url: '/login', changefreq: 'weekly', priority: '0.8' },
+      { url: '/signup', changefreq: 'weekly', priority: '0.8' }
     ];
 
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+                            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd
+                            http://www.google.com/schemas/sitemap-image/1.1
+                            http://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd">
 ${pages.map(page => `  <url>
     <loc>${baseUrl}${page.url}</loc>
     ${page.changefreq ? `<changefreq>${page.changefreq}</changefreq>` : ''}
     ${page.priority ? `<priority>${page.priority}</priority>` : ''}
+    <lastmod>${new Date().toISOString()}</lastmod>
   </url>`).join('\n')}
 </urlset>`;
 
