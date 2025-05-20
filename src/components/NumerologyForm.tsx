@@ -84,9 +84,9 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
               className="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2"
             >
               <img 
-                src="/VishwaGuruLogo.png"
+                src="/vishwa.png"
                 alt="VishwaGuru Logo" 
-                className="w-7 h-7 object-contain dark:invert"
+                className="w-12 h-12 object-contain dark:invert"
               />
               {language === 'english' ? 'Full Name' : 'पूरा नाम'}
             </label>
@@ -110,9 +110,9 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
               className="absolute -right-2 -top-2"
             >
               <img 
-                src="/VishwaGuruLogo.png"
+                src="/vishwa.png"
                 alt="VishwaGuru Logo" 
-                className="w-8 h-8 object-contain dark:invert"
+                className="w-12 h-12 object-contain dark:invert"
               />
             </motion.div>
           </motion.div>
@@ -134,9 +134,9 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
               className="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2"
             >
               <img 
-                src="/VishwaGuruLogo.png"
+                src="/vishwa.png"
                 alt="VishwaGuru Logo" 
-                className="w-7 h-7 object-contain dark:invert"
+                className="w-12 h-12 object-contain dark:invert"
               />
               {language === 'english' ? 'Date of Birth' : 'जन्म तिथि'}
             </label>
@@ -159,9 +159,9 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
               className="absolute -right-2 -top-2"
             >
               <img 
-                src="/VishwaGuruLogo.png"
+                src="/vishwa.png"
                 alt="VishwaGuru Logo" 
-                className="w-8 h-8 object-contain dark:invert"
+                className="w-12 h-12 object-contain dark:invert"
               />
             </motion.div>
           </motion.div>
@@ -176,13 +176,13 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
             whileHover="hover"
             whileTap="tap"
             type="submit"
-            className="px-8 py-3 text-lg font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transform transition-all duration-300 ease-in-out shadow-md hover:shadow-xl"
+            className="px-6 py-2 text-base font-medium text-white bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg hover:from-indigo-600 hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transform transition-all duration-300 ease-in-out shadow-sm hover:shadow-md"
           >
             <span className="flex items-center gap-2">
               <img 
-                src="/VishwaGuruLogo.png"
+                src="/vishwa.png"
                 alt="VishwaGuru Logo" 
-                className="w-7 h-7 object-contain invert"
+                className="w-8 h-8 object-contain invert"
               />
               {language === 'english' ? 'Calculate' : 'गणना करें'}
             </span>
@@ -266,8 +266,8 @@ const NumerologyForm: React.FC<NumerologyFormProps> = ({ onCalculate, language }
                   className="mt-6 text-sm text-center text-gray-500 dark:text-gray-400"
                 >
                   {language === 'english'
-                    ? 'Share to help me promote my website'
-                    : 'मेरी वेबसाइट को प्रमोट करने में मदद करने के लिए शेयर करें'}
+                    ? 'Donate your money in the welfare and maintainance of this website'
+                    : 'इस वेबसाइट के विकास और संरक्षण में आपकी मदद करने के लिए आपकी प्रियता दें'}
                 </motion.p>
               </motion.div>
             </div>
