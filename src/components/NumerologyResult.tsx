@@ -65,6 +65,11 @@ const NumerologyResultDisplay: React.FC<NumerologyResultProps> = ({
     ? 'Prediction will come in further updates.' 
     : 'भविष्यवाणी आगामी अपडेट में उपलब्ध होगी।';
 
+  const getInterpDescription = (interp: any) => {
+    if (!interp) return defaultDescription;
+    return language === 'english' ? interp.englishDescription : interp.hindiDescription;
+  };
+
   const handleSendEmail = async () => {
     if (!user?.email || emailSent) return;
 
@@ -123,24 +128,44 @@ const NumerologyResultDisplay: React.FC<NumerologyResultProps> = ({
 
   const numberDescriptions = {
     destinyNumber: {
-      english: "Your Destiny Number represents your life's purpose and the opportunities that await you.",
-      hindi: "आपका भाग्य अंक आपके जीवन के उद्देश्य और आपकी प्रतीक्षा कर रहे अवसरों का प्रतिनिधित्व करता है।"
+      english: user 
+        ? "Your Destiny Number represents your life's purpose and the opportunities that await you. Here's your detailed prediction: " + getInterpDescription(destinyInterp)
+        : "Your Destiny Number represents your life's purpose and the opportunities that await you. Sign in to get the complete reading with predictions.",
+      hindi: user
+        ? "आपका भाग्य अंक आपके जीवन के उद्देश्य और आपकी प्रतीक्षा कर रहे अवसरों का प्रतिनिधित्व करता है। यहां आपकी विस्तृत भविष्यवाणी है: " + getInterpDescription(destinyInterp)
+        : "आपका भाग्य अंक आपके जीवन के उद्देश्य और आपकी प्रतीक्षा कर रहे अवसरों का प्रतिनिधित्व करता है। पूर्ण पठन और भविष्यवाणियां प्राप्त करने के लिए साइन इन करें।"
     },
     soulUrgeNumber: {
-      english: "Your Soul Urge Number reveals your inner desires and what truly motivates you.",
-      hindi: "आपका आत्मा अंक आपकी आंतरिक इच्छाओं और आपको वास्तव में क्या प्रेरित करता है, यह दर्शाता है।"
+      english: user
+        ? "Your Soul Urge Number reveals your inner desires and what truly motivates you. Here's your detailed prediction: " + getInterpDescription(getInterpretation(result.soulUrgeNumber, destinyInterpretations))
+        : "Your Soul Urge Number reveals your inner desires and what truly motivates you. Sign in to get the complete reading with predictions.",
+      hindi: user
+        ? "आपका आत्मा अंक आपकी आंतरिक इच्छाओं और आपको वास्तव में क्या प्रेरित करता है, यह दर्शाता है। यहां आपकी विस्तृत भविष्यवाणी है: " + getInterpDescription(getInterpretation(result.soulUrgeNumber, destinyInterpretations))
+        : "आपका आत्मा अंक आपकी आंतरिक इच्छाओं और आपको वास्तव में क्या प्रेरित करता है, यह दर्शाता है। पूर्ण पठन और भविष्यवाणियां प्राप्त करने के लिए साइन इन करें।"
     },
     personalityNumber: {
-      english: "Your Personality Number shows how others perceive you and your outer personality.",
-      hindi: "आपका व्यक्तित्व अंक दर्शाता है कि दूसरे आपको कैसे देखते हैं और आपका बाहरी व्यक्तित्व कैसा है।"
+      english: user
+        ? "Your Personality Number shows how others perceive you and your outer personality. Here's your detailed prediction: " + getInterpDescription(getInterpretation(result.personalityNumber, destinyInterpretations))
+        : "Your Personality Number shows how others perceive you and your outer personality. Sign in to get the complete reading with predictions.",
+      hindi: user
+        ? "आपका व्यक्तित्व अंक दर्शाता है कि दूसरे आपको कैसे देखते हैं और आपका बाहरी व्यक्तित्व कैसा है। यहां आपकी विस्तृत भविष्यवाणी है: " + getInterpDescription(getInterpretation(result.personalityNumber, destinyInterpretations))
+        : "आपका व्यक्तित्व अंक दर्शाता है कि दूसरे आपको कैसे देखते हैं और आपका बाहरी व्यक्तित्व कैसा है। पूर्ण पठन और भविष्यवाणियां प्राप्त करने के लिए साइन इन करें।"
     },
     lifePathNumber: {
-      english: "Your Life Path Number indicates the path you'll take in life and your natural abilities.",
-      hindi: "आपका जीवन पथ अंक जीवन में आपके द्वारा लिए जाने वाले मार्ग और आपकी प्राकृतिक क्षमताओं को दर्शाता है।"
+      english: user
+        ? "Your Life Path Number indicates the path you'll take in life and your natural abilities. Here's your detailed prediction: " + getInterpDescription(lifePathInterp)
+        : "Your Life Path Number indicates the path you'll take in life and your natural abilities. Sign in to get the complete reading with predictions.",
+      hindi: user
+        ? "आपका जीवन पथ अंक जीवन में आपके द्वारा लिए जाने वाले मार्ग और आपकी प्राकृतिक क्षमताओं को दर्शाता है। यहां आपकी विस्तृत भविष्यवाणी है: " + getInterpDescription(lifePathInterp)
+        : "आपका जीवन पथ अंक जीवन में आपके द्वारा लिए जाने वाले मार्ग और आपकी प्राकृतिक क्षमताओं को दर्शाता है। पूर्ण पठन और भविष्यवाणियां प्राप्त करने के लिए साइन इन करें।"
     },
     birthdayNumber: {
-      english: "Your Birthday Number reveals special talents and abilities you possess.",
-      hindi: "आपका जन्मदिन अंक आपके पास मौजूद विशेष प्रतिभाओं और क्षमताओं को प्रकट करता है।"
+      english: user
+        ? "Your Birthday Number reveals special talents and abilities you possess. Here's your detailed prediction: " + getInterpDescription(getInterpretation(result.birthdayNumber, destinyInterpretations))
+        : "Your Birthday Number reveals special talents and abilities you possess. Sign in to get the complete reading with predictions.",
+      hindi: user
+        ? "आपका जन्मदिन अंक आपके पास मौजूद विशेष प्रतिभाओं और क्षमताओं को प्रकट करता है। यहां आपकी विस्तृत भविष्यवाणी है: " + getInterpDescription(getInterpretation(result.birthdayNumber, destinyInterpretations))
+        : "आपका जन्मदिन अंक आपके पास मौजूद विशेष प्रतिभाओं और क्षमताओं को प्रकट करता है। पूर्ण पठन और भविष्यवाणियां प्राप्त करने के लिए साइन इन करें।"
     }
   };
 

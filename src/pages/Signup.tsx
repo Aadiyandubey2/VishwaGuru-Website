@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../utils/AuthContext';
 import { useNotification } from '../utils/NotificationContext';
 import { Language } from '../types';
+import { Helmet } from 'react-helmet';
 
 interface SignupProps {
   language: Language;
@@ -47,7 +48,21 @@ const Signup: React.FC<SignupProps> = ({ language }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-8">
+      <Helmet>
+        <title>Sign Up - VishwaGuru</title>
+        <meta name="description" content="Create your VishwaGuru account to save your numerology and palmistry readings and access your personalized dashboard." />
+        <link rel="canonical" href="https://www.vishwaguru.site/signup" />
+        <meta property="og:title" content="Sign Up - VishwaGuru" />
+        <meta property="og:description" content="Create your VishwaGuru account to save your numerology and palmistry readings and access your personalized dashboard." />
+        <meta property="og:url" content="https://www.vishwaguru.site/signup" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://www.vishwaguru.site/VishwaGuruLogo.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Sign Up - VishwaGuru" />
+        <meta name="twitter:description" content="Create your VishwaGuru account to save your numerology and palmistry readings and access your personalized dashboard." />
+        <meta name="twitter:image" content="https://www.vishwaguru.site/VishwaGuruLogo.png" />
+      </Helmet>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
