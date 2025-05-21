@@ -52,6 +52,11 @@ function getPalmBoundingBox(landmarks: any[]): { width: number; height: number; 
   };
 }
 
+// Add mobile detection helper
+const isMobileDevice = () => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};
+
 const PalmReading: React.FC<PalmReadingProps> = ({ onPredictionComplete, language, addLocalPalmReading }) => {
   const webcamRef = useRef<Webcam>(null);
   const [model, setModel] = useState<handpose.HandPose | null>(null);
@@ -66,6 +71,7 @@ const PalmReading: React.FC<PalmReadingProps> = ({ onPredictionComplete, languag
   const lastLandmarksRef = useRef<any>(null);
   const { user } = useAuth();
   const { showNotification } = useNotification();
+  const [isMobile] = useState(isMobileDevice());
 
   // Bilingual UI text
   const uiText = {
@@ -219,11 +225,11 @@ const PalmReading: React.FC<PalmReadingProps> = ({ onPredictionComplete, languag
                     screenshotFormat="image/jpeg"
                     className="w-full h-full rounded-xl border-4 border-indigo-200 dark:border-indigo-700 shadow-lg bg-gray-100 dark:bg-gray-900 object-cover"
                     videoConstraints={{
-                      facingMode: "user",
+                      facingMode: isMobile ? "environment" : "user",
                       width: 1280,
                       height: 960,
                     }}
-                    style={{ width: '100%', height: '100%' }}
+                    style={{ width: '100%', height: '100%', transform: isMobile ? 'none' : 'scaleX(-1)' }}
                   />
                   {/* Animated scan line */}
                   <AnimatePresence>
@@ -398,4 +404,4 @@ const PalmReading: React.FC<PalmReadingProps> = ({ onPredictionComplete, languag
   );
 };
 
-export default PalmReading; 
+export default PalmReading;
