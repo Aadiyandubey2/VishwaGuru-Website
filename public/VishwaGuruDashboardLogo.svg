@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="800" viewBox="0 0 800 800" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(200,100)" fill="currentColor">
+    <path d="M200 0 
+             L220 30 L240 0 L220 40 Z 
+             M180 20 L200 50 L220 20 L200 60 Z
+             M240 30 L260 60 L280 30 L260 70 Z
+             M150 300 
+             C150 200, 250 200, 250 300
+             L270 500
+             L230 500
+             L250 300
+             C250 250, 150 250, 150 300 Z
+             M180 500
+             L320 500
+             A160 80 0 1 1 180 500
+             Z" />
+  </g>
+</svg> 

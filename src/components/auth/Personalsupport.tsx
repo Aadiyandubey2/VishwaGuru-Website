@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { HeartHandshake, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Language } from '../../types';
@@ -9,6 +9,8 @@ interface PersonalSupportProps {
 }
 
 const PersonalSupport: React.FC<PersonalSupportProps> = ({ language }) => {
+  const [showModal, setShowModal] = useState(false);
+
   const handleShare = async () => {
     const shareData = {
       title: language === 'english' ? 'Support a Student' : 'एक छात्र की मदद करें',
@@ -37,54 +39,89 @@ const PersonalSupport: React.FC<PersonalSupportProps> = ({ language }) => {
       initial={{ opacity: 0 }} 
       animate={{ opacity: 1 }} 
       transition={{ duration: 0.6 }}
-      className="w-full"
+      className="w-full flex flex-col items-center justify-center"
     >
-      <div className="text-center mb-4">
-        <div className="flex items-center justify-center mb-2">
-          <HeartHandshake className="text-indigo-600 dark:text-indigo-400 mr-2" size={24} />
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+      <div className="text-center mb-2">
+        <div className="flex items-center justify-center mb-1">
+          <HeartHandshake className="text-indigo-600 dark:text-indigo-400 mr-2" size={20} />
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white">
             {language === 'english' ? 'Support a Student' : 'एक छात्र की मदद करें'}
           </h2>
         </div>
-        
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-xs text-gray-600 dark:text-gray-400 max-w-xs mx-auto">
           {language === 'english' 
             ? 'I am a student and cannot help others. Please consider supporting my education and development work.' 
             : 'मैं एक छात्र हूं और दूसरों की मदद नहीं कर सकता। कृपया मेरी शिक्षा और विकास कार्य में सहयोग करने पर विचार करें।'}
         </p>
       </div>
 
+      {/* Small QR code, click to expand */}
       <motion.div 
-        className="flex justify-center mb-4"
-        whileHover={{ scale: 1.02 }}
+        className="flex justify-center mb-2 cursor-pointer"
+        whileHover={{ scale: 1.05 }}
         transition={{ type: "spring", stiffness: 300 }}
+        onClick={() => setShowModal(true)}
       >
         <img 
           src={qrCode} 
           alt="Support QR Code" 
-          className="w-48 h-48 rounded-lg shadow-md border-2 border-indigo-200 dark:border-indigo-800"
+          className="w-20 h-20 rounded-md shadow border border-indigo-200 dark:border-indigo-800 transition-transform duration-200 hover:scale-105"
         />
       </motion.div>
-
-      <p className="text-sm text-center text-gray-500 dark:text-gray-400 mb-4">
+      <p className="text-xs text-center text-gray-500 dark:text-gray-400 mb-2">
         {language === 'english' 
           ? 'Share to help me promote my website and support my education' 
           : 'मेरी वेबसाइट को प्रमोट करने और मेरी शिक्षा का समर्थन करने में मदद करें'}
       </p>
+      <motion.button 
+        className="flex items-center space-x-2 px-3 py-1.5 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={handleShare}
+      >
+        <Share2 size={16} />
+        <span>
+          {language === 'english' ? 'Share' : 'साझा करें'}
+        </span>
+      </motion.button>
 
-      <div className="flex justify-center">
-        <motion.button 
-          className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={handleShare}
+      {/* Modal for large QR code */}
+      {showModal && (
+        <motion.div 
+          initial={{ opacity: 0 }} 
+          animate={{ opacity: 1 }} 
+          exit={{ opacity: 0 }} 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          onClick={() => setShowModal(false)}
         >
-          <Share2 size={18} />
-          <span>
-            {language === 'english' ? 'Share' : 'साझा करें'}
-          </span>
-        </motion.button>
-      </div>
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+            className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-6 flex flex-col items-center"
+            onClick={e => e.stopPropagation()}
+          >
+            <button
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-xl"
+              onClick={() => setShowModal(false)}
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <img 
+              src={qrCode} 
+              alt="Support QR Code Large" 
+              className="w-64 h-64 rounded-lg shadow border-2 border-indigo-300 dark:border-indigo-700 mb-2"
+            />
+            <p className="text-sm text-gray-700 dark:text-gray-200 text-center mt-2 max-w-xs">
+              {language === 'english' 
+                ? 'Scan this QR code to support my education and work. Thank you for your kindness!'
+                : 'इस क्यूआर कोड को स्कैन करके मेरी शिक्षा और कार्य का समर्थन करें। आपकी दयालुता के लिए धन्यवाद!'}
+            </p>
+          </motion.div>
+        </motion.div>
+      )}
     </motion.div>
   );
 };
