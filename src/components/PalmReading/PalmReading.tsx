@@ -3,6 +3,9 @@ import * as tf from '@tensorflow/tfjs';
 import * as handpose from '@tensorflow-models/handpose';
 import Webcam from 'react-webcam';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// Detect mobile devices
+const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 import {
   analyzeLifeLine,
   analyzeHeartLine,
@@ -212,14 +215,13 @@ const PalmReading: React.FC<PalmReadingProps> = ({ onPredictionComplete, languag
                 {uiText.analysisTitle}
               </h2>
               <div className="relative w-full mx-auto mb-4 sm:mb-8 flex items-center justify-center">
-                <div className="w-full max-w-[900px] aspect-[4/3] mx-auto relative">
-                  <Webcam
+                <div className="w-full max-w-[900px] aspect-[4/3] mx-auto relative">                  <Webcam
                     ref={webcamRef}
                     audio={false}
                     screenshotFormat="image/jpeg"
                     className="w-full h-full rounded-xl border-4 border-indigo-200 dark:border-indigo-700 shadow-lg bg-gray-100 dark:bg-gray-900 object-cover"
                     videoConstraints={{
-                      facingMode: "user",
+                      facingMode: isMobile ? "environment" : "user",
                       width: 1280,
                       height: 960,
                     }}
