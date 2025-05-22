@@ -6,6 +6,8 @@ import { useAuth } from '../utils/AuthContext';
 import { useNotification } from '../utils/NotificationContext';
 import { Language } from '../types';
 import { destinyInterpretations, lifePathInterpretations, getInterpretation } from '../data/interpretations';
+import { Helmet } from 'react-helmet';
+import { Link } from 'react-router-dom';
 
 interface SavedReading {
   id: string;
@@ -19,12 +21,20 @@ interface SavedReading {
   created_at: string;
 }
 
+interface SavedPalmReading {
+  id: string;
+  user_id: string;
+  prediction: string;
+  created_at: string;
+}
+
 interface DashboardProps {
   language: Language;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ language }) => {
   const [readings, setReadings] = useState<SavedReading[]>([]);
+  const [palmReadings, setPalmReadings] = useState<SavedPalmReading[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const { showNotification } = useNotification();
@@ -49,6 +59,19 @@ const Dashboard: React.FC<DashboardProps> = ({ language }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const loadLocal = () => {
+      const localPalmReadings = localStorage.getItem('localPalmReadings');
+      const readings = localPalmReadings ? JSON.parse(localPalmReadings) : [];
+      setPalmReadings(readings);
+      console.log('Palm readings loaded:', readings);
+    };
+    window.addEventListener('localPalmReadingsUpdated', loadLocal);
+    // Initial load
+    loadLocal();
+    return () => window.removeEventListener('localPalmReadingsUpdated', loadLocal);
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -85,6 +108,10 @@ const Dashboard: React.FC<DashboardProps> = ({ language }) => {
     }
   };
 
+  const deletePalmReading = async (id: string) => {
+    setPalmReadings(palmReadings.filter(reading => reading.id !== id));
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat(language === 'english' ? 'en-US' : 'hi-IN', {
@@ -98,23 +125,94 @@ const Dashboard: React.FC<DashboardProps> = ({ language }) => {
     setExpandedReading(expandedReading === id ? null : id);
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
+  const addLocalPalmReading = (prediction: string) => {
+    const newReading = {
+      id: Date.now().toString(),
+      user_id: 'local',
+      prediction,
+      created_at: new Date().toISOString(),
+    };
+    setPalmReadings([newReading, ...palmReadings]);
+  };
+
+  return (    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
+      <Helmet>
+        <title>User Dashboard - VishwaGuru</title>
+        <meta name="description" content="Access your saved numerology and palmistry readings, manage your account, and explore your spiritual journey on VishwaGuru." />
+        <link rel="canonical" href="https://www.vishwaguru.site/dashboard" />
+        <meta property="og:title" content="User Dashboard - VishwaGuru" />
+        <meta property="og:description" content="Access your saved numerology and palmistry readings, manage your account, and explore your spiritual journey on VishwaGuru." />
+        <meta property="og:url" content="https://www.vishwaguru.site/dashboard" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://www.vishwaguru.site/VishwaGuruLogo.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="User Dashboard - VishwaGuru" />
+        <meta name="twitter:description" content="Access your saved numerology and palmistry readings, manage your account, and explore your spiritual journey on VishwaGuru." />
+        <meta name="twitter:image" content="https://www.vishwaguru.site/VishwaGuruLogo.png" />
+      </Helmet>
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
-          {language === 'english' ? 'Your Saved Readings' : 'आपकी सहेजी गई रीडिंग्स'}
-        </h1>
+        <Link to="/" className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-lg bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 font-semibold shadow hover:bg-blue-200 dark:hover:bg-blue-800 transition w-fit">
+          <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 19l-7-7 7-7' />
+          </svg>
+          {language === 'english' ? 'Back to Home' : 'होम पेज पर वापस जाएं'}
+        </Link>
+        <div className="flex flex-col items-center mb-12">
+          <motion.img
+            src="/VishwaGuruDashboardLogo.svg"
+            alt="VishwaGuru Logo"
+            className="w-24 h-24 mb-6 dark:invert"
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          />
+          <motion.h1 
+            className="text-4xl font-bold text-gray-900 dark:text-white text-center"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+          >
+            {language === 'english' ? 'Your Spiritual Journey' : 'आपकी आध्यात्मिक यात्रा'}
+          </motion.h1>
+          <motion.p 
+            className="mt-2 text-lg text-gray-600 dark:text-gray-400 text-center"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
+            {language === 'english' 
+              ? 'Explore your numerological readings and insights'
+              : 'अपनी संख्यात्मक पठन और अंतर्दृष्टि का अन्वेषण करें'}
+          </motion.p>
+        </div>
 
         {loading ? (
-          <div className="text-center text-gray-600 dark:text-gray-400">
+          <motion.div 
+            className="text-center text-gray-600 dark:text-gray-400"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
             {language === 'english' ? 'Loading...' : 'लोड हो रहा है...'}
-          </div>
+          </motion.div>
         ) : readings.length === 0 ? (
-          <div className="text-center text-gray-600 dark:text-gray-400">
-            {language === 'english' 
-              ? 'No saved readings yet. Calculate a reading to save it here!'
-              : 'अभी तक कोई सहेजी गई रीडिंग नहीं है। यहां सहेजने के लिए एक रीडिंग की गणना करें!'}
-          </div>
+          <motion.div 
+            className="text-center p-8 rounded-lg bg-white dark:bg-gray-800 shadow-md"
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <img
+              src="/VishwaGuruDashboardLogo.svg"
+              alt="Empty state"
+              className="w-16 h-16 mx-auto mb-4 opacity-50 dark:invert"
+            />
+            <p className="text-gray-600 dark:text-gray-400">
+              {language === 'english' 
+                ? 'No saved readings yet. Calculate a reading to begin your spiritual journey!'
+                : 'अभी तक कोई सहेजी गई रीडिंग नहीं है। अपनी आध्यात्मिक यात्रा शुरू करने के लिए एक रीडिंग की गणना करें!'}
+            </p>
+          </motion.div>
         ) : (
           <div className="space-y-6">
             {readings.map((reading) => {
@@ -238,6 +336,63 @@ const Dashboard: React.FC<DashboardProps> = ({ language }) => {
             })}
           </div>
         )}
+
+        {/* Palm Readings Section */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+            {language === 'english' ? 'Saved Palm Readings' : 'सहेजे गए हस्तरेखा पठन'}
+          </h2>
+          {palmReadings.length === 0 ? (
+            <motion.div 
+              className="text-center p-8 rounded-lg bg-white dark:bg-gray-800 shadow-md"
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              <img
+                src="/VishwaGuruDashboardLogo.svg"
+                alt="Empty state"
+                className="w-16 h-16 mx-auto mb-4 opacity-50 dark:invert"
+              />
+              <p className="text-gray-600 dark:text-gray-400">
+                {language === 'english' 
+                  ? 'No saved palm readings yet. Get a palm reading to begin your journey!'
+                  : 'अभी तक कोई सहेजी गई हस्तरेखा पठन नहीं है। अपनी यात्रा शुरू करने के लिए एक हस्तरेखा पठन प्राप्त करें!'}
+              </p>
+            </motion.div>
+          ) : (
+            <div className="space-y-6">
+              {palmReadings.map((reading) => (
+                <motion.div
+                  key={reading.id}
+                  layout
+                  className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6"
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                        {language === 'english' ? 'Palm Reading' : 'हस्तरेखा पठन'}
+                      </h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {language === 'english' ? 'Created on: ' : 'बनाया गया: '}
+                        {formatDate(reading.created_at)}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => deletePalmReading(reading.id)}
+                      className="text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300"
+                    >
+                      <Trash2 size={20} />
+                    </button>
+                  </div>
+                  <p className="text-gray-700 dark:text-gray-300">
+                    {reading.prediction}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
