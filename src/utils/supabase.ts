@@ -13,4 +13,12 @@ export type AuthUser = {
   id: string;
   email: string;
   created_at: string;
+};
+
+// Define the saved_palm_readings table
+export const savedPalmReadingsTable = {
+  id: 'uuid',
+  user_id: 'uuid',
+  prediction: 'text',
+  created_at: 'timestamp with time zone'
 }; 
