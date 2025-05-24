@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, memo } from 'react';
+import { useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
@@ -15,54 +15,6 @@ interface HeaderProps {
 const Header = memo<HeaderProps>(({ language }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useAuth();
-  
-  // Owner announcement text management
-  const [ownerText, setOwnerText] = useState<string>(() => {
-    return localStorage.getItem('ownerAnnouncement') || 
-      (language === 'english' ? 'Satyameva Jayate' : 'सत्यमेव जयते');
-  });
-  const [isEditing, setIsEditing] = useState(false);
-  const [editText, setEditText] = useState('');
-  const [keyInput, setKeyInput] = useState('');
-  const [showKeyPrompt, setShowKeyPrompt] = useState(false);
-  
-  // The owner key - in a real app, this would be securely stored and verified server-side
-  // WARNING: This is not secure for production! Use proper authentication in real applications
-  const OWNER_KEY = '789'; // Using the owner's phone number as the key
-  
-  // Update localStorage when text changes
-  useEffect(() => {
-    localStorage.setItem('ownerAnnouncement', ownerText);
-  }, [ownerText]);
-  
-  // Handle key verification - memoized to prevent recreation on each render
-  const handleKeyVerification = useCallback(() => {
-    if (keyInput === OWNER_KEY) {
-      setShowKeyPrompt(false);
-      setIsEditing(true);
-      setEditText(ownerText);
-    } else {
-      alert(language === 'english' ? 'Incorrect key!' : 'गलत कुंजी!');
-    }
-    setKeyInput('');
-  }, [keyInput, language, ownerText]);
-  
-  // Start the editing process - memoized to prevent recreation on each render
-  const startEditing = useCallback(() => {
-    setShowKeyPrompt(true);
-  }, []);
-  
-  // Save the edited text
-  const saveText = () => {
-    setOwnerText(editText);
-    setIsEditing(false);
-  };
-  
-  // Cancel editing
-  const cancelEditing = () => {
-    setIsEditing(false);
-    setShowKeyPrompt(false);
-  };
 
   const ownerDetails = {
     name: language === 'english' ? 'Aadiyan Dubey' : 'आदियन दुबे',
@@ -79,42 +31,6 @@ const Header = memo<HeaderProps>(({ language }) => {
       transition={{ duration: 0.6, type: "spring", stiffness: 120 }}
       className="bg-white dark:bg-gray-800 shadow-md border-b border-gray-200 dark:border-gray-700 w-full"
     >
-      {/* Key Verification Modal */}
-      {showKeyPrompt && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full">
-            <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">
-              {language === 'english' ? 'Owner Verification' : 'मालिक सत्यापन'}
-            </h3>
-            <p className="mb-4 text-gray-700 dark:text-gray-300">
-              {language === 'english' 
-                ? 'Please enter the owner key to edit the announcement:' 
-                : 'घोषणा संपादित करने के लिए कृपया मालिक कुंजी दर्ज करें:'}
-            </p>
-            <input
-              type="password"
-              value={keyInput}
-              onChange={(e) => setKeyInput(e.target.value)}
-              className="w-full px-3 py-2 border rounded mb-4 text-gray-800"
-              placeholder={language === 'english' ? 'Enter owner key' : 'मालिक कुंजी दर्ज करें'}
-            />
-            <div className="flex justify-end space-x-2">
-              <button 
-                onClick={() => setShowKeyPrompt(false)}
-                className="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded text-gray-800"
-              >
-                {language === 'english' ? 'Cancel' : 'रद्द करें'}
-              </button>
-              <button 
-                onClick={handleKeyVerification}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white"
-              >
-                {language === 'english' ? 'Verify' : 'सत्यापित करें'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-nowrap items-center justify-between gap-x-4 overflow-x-auto">
         <Link to="/" className="flex items-center space-x-4 flex-shrink-0">
           <div className="h-16 w-16 flex items-center justify-center bg-transparent dark:bg-transparent">
@@ -133,42 +49,6 @@ const Header = memo<HeaderProps>(({ language }) => {
             </h1>
           </div>
         </Link>
-
-        {/* Owner Announcement Text - between logo and navbar, visible on all devices */}
-        <div className="flex-1 mx-2 md:mx-4 items-center flex">
-          {isEditing ? (
-            <div className="flex-1 flex items-center space-x-2 max-w-md overflow-x-auto">
-              <input
-                type="text"
-                value={editText}
-                onChange={(e) => setEditText(e.target.value)}
-                className="flex-1 px-2 py-1 text-gray-800 dark:text-white bg-white dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600 min-w-0"
-                placeholder={language === 'english' ? 'Enter announcement text...' : 'घोषणा पाठ दर्ज करें...'}
-              />
-              <button 
-                onClick={saveText}
-                className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm flex-shrink-0"
-              >
-                {language === 'english' ? 'Save' : 'सहेजें'}
-              </button>
-              <button 
-                onClick={cancelEditing}
-                className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm flex-shrink-0"
-              >
-                {language === 'english' ? 'Cancel' : 'रद्द करें'}
-              </button>
-            </div>
-          ) : (
-            <div className="flex-1 flex items-center min-w-0">
-              <span 
-                className="text-gray-700 dark:text-gray-300 text-lg md:text-2xl truncate w-full text-center font-medium"
-                onClick={startEditing}
-              >
-                {ownerText}
-              </span>
-            </div>
-          )}
-        </div>
 
         {/* Hamburger menu for mobile (logo and hamburger only) */}
         <div className="flex md:hidden items-center ml-auto">

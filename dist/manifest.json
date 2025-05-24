@@ -1,0 +1,22 @@
+{
+  "name": "VishwaGuru - Astrology, Numerology & Spiritual Guidance",
+  "short_name": "VishwaGuru",
+  "description": "Free spiritual guidance through astrology, numerology, palm reading and partner prediction",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "/VishwaGuruLogo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/VishwaGuruLogo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
