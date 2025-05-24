@@ -1,6 +1,4 @@
 import React, { useRef, useState, useEffect } from 'react';
-import * as tf from '@tensorflow/tfjs';
-import * as handpose from '@tensorflow-models/handpose';
 import Webcam from 'react-webcam';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -11,7 +9,6 @@ import {
   generateDetailedPrediction,
   PalmLanguage,
   detectHandType,
-  getHandSideDisplay,
   generateFullLifePrediction
 } from './palmReadingUtils';
 import { useAuth } from '../../utils/AuthContext';
@@ -54,7 +51,7 @@ function getPalmBoundingBox(landmarks: any[]): { width: number; height: number; 
 
 const PalmReading: React.FC<PalmReadingProps> = ({ onPredictionComplete, language, addLocalPalmReading }) => {
   const webcamRef = useRef<Webcam>(null);
-  const [model, setModel] = useState<handpose.HandPose | null>(null);
+  const [model, setModel] = useState<any | null>(null);
   const [isModelLoading, setIsModelLoading] = useState(true);
   const [isCapturing, setIsCapturing] = useState(false);
   const [prediction, setPrediction] = useState<string>('');
@@ -82,8 +79,16 @@ const PalmReading: React.FC<PalmReadingProps> = ({ onPredictionComplete, languag
   useEffect(() => {
     const loadModel = async () => {
       try {
+        // Dynamically import TensorFlow.js and handpose only when needed
+        const tf = await import('@tensorflow/tfjs');
+        const handpose = await import('@tensorflow-models/handpose');
+        
         await tf.ready();
-        const handposeModel = await handpose.load();
+        const handposeModel = await handpose.load({
+          // Lower threshold for faster detection
+          detectionConfidence: 0.6
+        });
+        
         setModel(handposeModel);
         setIsModelLoading(false);
       } catch (error) {
@@ -93,7 +98,7 @@ const PalmReading: React.FC<PalmReadingProps> = ({ onPredictionComplete, languag
       }
     };
     loadModel();
-  }, [language]);
+  }, [language, uiText.loading]);
 
   const analyzePalm = async (landmarks: any[]) => {
     // Check palm size and centering
@@ -219,7 +224,7 @@ const PalmReading: React.FC<PalmReadingProps> = ({ onPredictionComplete, languag
                     screenshotFormat="image/jpeg"
                     className="w-full h-full rounded-xl border-4 border-indigo-200 dark:border-indigo-700 shadow-lg bg-gray-100 dark:bg-gray-900 object-cover"
                     videoConstraints={{
-                      facingMode: "user",
+                      facingMode: "environment",
                       width: 1280,
                       height: 960,
                     }}

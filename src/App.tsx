@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
+import { useAuth } from './utils/AuthContext';
 import { motion } from 'framer-motion';
-import NumerologyForm from './components/NumerologyForm';
-import NumerologyResultDisplay from './components/NumerologyResult';
 import { Language, NumerologyResult } from './types';
 import {
   calculateDestinyNumber,
@@ -15,16 +14,22 @@ import { AuthProvider } from './utils/AuthContext';
 import { NotificationProvider } from './utils/NotificationContext';
 import { useNotification } from './utils/NotificationContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import Dashboard from './pages/Dashboard';
-import PalmReadingPage from './pages/PalmReadingPage';
-import PanchangPage from './pages/PanchangPage';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
-import { Calculator, Hand, Calendar, Smartphone as SmartphoneIcon, ExternalLink } from 'lucide-react';
+import NumerologyForm from './components/NumerologyForm';
+import NumerologyResultDisplay from './components/NumerologyResult';
+
+// Lazy-loaded components
+const Login = lazy(() => import('./pages/Login'));
+const Signup = lazy(() => import('./pages/Signup'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const PalmReadingPage = lazy(() => import('./pages/PalmReadingPage'));
+const PanchangPage = lazy(() => import('./pages/PanchangPage'));
+const PartnerPredictPage = lazy(() => import('./pages/PartnerPredictPage'));
+const PersonalSupport = lazy(() => import('./components/auth/Personalsupport'));
+import { Calculator, Calendar, Hand, Heart, BarChart2, Shield, Sprout, Smartphone as SmartphoneIcon, Sun, Moon } from 'lucide-react';
 import { Helmet } from 'react-helmet';
-import PersonalSupport from './components/auth/Personalsupport';
+// PersonalSupport is now lazy-loaded
 
 function NumerologyPage({ language }: { language: Language }) {
   const { showNotification } = useNotification();
@@ -156,36 +161,154 @@ function NumerologyPage({ language }: { language: Language }) {
 
 function Home({ language }: { language: Language }) {
   const [showSupportModal, setShowSupportModal] = useState(false);
-  const featureCards = [
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return document.documentElement.classList.contains('dark');
+  });
+  const { user } = useAuth();
+  
+  const toggleTheme = () => {
+    const newDarkMode = !isDarkMode;
+    setIsDarkMode(newDarkMode);
+    
+    if (newDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  };
+  // Define card interface to support darkIcon for the theme card
+  interface FeatureCard {
+    label: { en: string; hi: string };
+    icon: React.ReactNode;
+    darkIcon?: React.ReactNode;
+    to: string;
+    color: string;
+    isProtected?: boolean;
+    hideWhenAuth?: boolean;
+    onClick?: () => void;
+    isExternal?: boolean;
+  }
+
+  const featureCards: FeatureCard[] = [
     {
-      label: { en: 'Numerology', hi: 'अंकशास्त्र' },
-      icon: <Calculator size={48} />,
-      to: '/numerology',
-      color: 'from-indigo-500 to-blue-500',
+      label: { en: 'Login', hi: 'लॉगिन' },
+      icon: <Shield size={48} className="text-white" />,
+      to: '/login',
+      color: 'from-[#5E35B1] to-[#D1C4E9]',
+      isProtected: false,
+      hideWhenAuth: true
     },
     {
-      label: { en: 'Palm Reading', hi: 'हस्तरेखा' },
-      icon: <Hand size={48} />,
-      to: '/palm-reading',
-      color: 'from-green-500 to-emerald-500',
+      label: { en: 'Sign Up', hi: 'साइन अप' },
+      icon: <Sprout size={48} className="text-white" />,
+      to: '/signup',
+      color: 'from-[#2E7D32] to-[#A5D6A7]',
+      isProtected: false,
+      hideWhenAuth: true
     },
     {
-      label: { en: 'Panchang', hi: 'पंचांग' },
-      icon: <Calendar size={48} />,
-      to: '/panchang',
-      color: 'from-purple-500 to-pink-500',
+      label: { en: 'Dashboard', hi: 'डैशबोर्ड' },
+      icon: <BarChart2 size={48} className="text-white" />,
+      to: '/dashboard',
+      color: 'from-[#1A73E8] to-[#B3D1FF]',
+      isProtected: true
     },
     {
       label: { 
-        en: 'Android App Coming Soon', 
-        hi: 'एंड्रॉइड ऐप जल्द आ रहा है' 
+        en: 'Theme', 
+        hi: 'थीम' 
       },
-      icon: <SmartphoneIcon size={48} />,
-      to: 'vishwaguru.site',
-      color: 'from-teal-500 to-cyan-500',
+      icon: <Moon size={48} className="text-white dark:hidden block" />,
+      darkIcon: <Sun size={48} className="text-white hidden dark:block" />,
+      to: '#',
+      color: 'from-gray-700 to-gray-500',
+      isProtected: false,
+      onClick: toggleTheme
+    },
+    {
+      label: { en: 'Switch to Hindi', hi: 'अंग्रेजी में बदलें' },
+      icon: (
+        <div className="relative flex items-center justify-center">
+          <span className="absolute text-2xl font-bold text-white -left-3 -top-3">अ</span>
+          <span className="absolute text-2xl font-bold text-white -right-3 -bottom-3">A</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <line x1="12" y1="2" x2="12" y2="22"></line>
+          </svg>
+        </div>
+      ),
+      to: '#',
+      color: 'from-[#FF7043] to-[#FFCCBC]',
+      isProtected: false,
+      onClick: () => {
+        const newLanguage = language === 'english' ? 'hindi' : 'english';
+        localStorage.setItem('language', newLanguage);
+        window.location.reload();
+      }
+    },
+    {
+      label: { en: 'Numerology', hi: 'अंकशास्त्र' },
+      icon: <Calculator size={48} className="text-white" />,
+      to: '/numerology',
+      color: 'from-indigo-600 to-blue-400',
+    },
+    {
+      label: { en: 'Partner Predict', hi: 'साथी की भविष्यवाणी' },
+      icon: <Heart size={48} className="text-white" />,
+      to: '/partner-predict',
+      color: 'from-purple-500 to-pink-500',
+    },
+    {
+      label: { en: 'Panchang', hi: 'पंचांग' },
+      icon: <Calendar size={48} className="text-white" />,
+      to: '/panchang',
+      color: 'from-amber-500 to-rose-500',
+    },
+    {
+      label: { en: 'Palm Reading', hi: 'हस्तरेखा' },
+      icon: <Hand size={48} className="text-white" />,
+      to: '/palm-reading',
+      color: 'from-green-600 to-emerald-400',
+    },
+    {
+      label: { 
+        en: 'Android App', 
+        hi: 'एंड्रॉइड ऐप' 
+      },
+      icon: <SmartphoneIcon size={48} className="text-white" />,
+      to: 'https://median.co/share/nopdeo#apk',
+      color: 'from-teal-600 to-cyan-400',
+      isExternal: true
+    },
+    {
+      label: { 
+        en: 'Contact Owner', 
+        hi: 'मालिक से संपर्क करें' 
+      },
+      icon: (
+        <div className="flex items-center justify-center">
+          <img 
+            src="/owner-photo.jpg" 
+            alt="Owner" 
+            className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-lg"
+            onError={(e) => {
+              // Fallback if image doesn't exist yet
+              const target = e.target as HTMLImageElement;
+              target.src = 'https://via.placeholder.com/48?text=Owner';
+            }}
+          />
+        </div>
+      ),
+      to: 'https://wa.me/917477257790',
+      color: 'from-blue-600 to-indigo-400',
+      isProtected: true,
       isExternal: true
     },
   ];
+
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 py-8 md:py-12">
@@ -216,39 +339,90 @@ function Home({ language }: { language: Language }) {
         </h1>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 w-full max-w-6xl mx-auto px-2 sm:px-4">
-        {featureCards.map((card, idx) => (
-          <Link to={card.to} key={card.to} className="focus:outline-none group">
-            <motion.div
-              whileHover={{ 
-                scale: 1.03,
-                transition: { duration: 0.2 }
-              }}
-              whileTap={{ scale: 0.95 }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ 
-                delay: idx * 0.1,
-                duration: 0.5,
-                ease: [0.23, 1, 0.32, 1]
-              }}
-              className={`flex flex-col items-center justify-center p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl bg-gradient-to-br ${card.color} text-white font-bold text-sm sm:text-lg lg:text-xl cursor-pointer select-none home-feature-card w-full aspect-square`}
-              style={{
-                boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
-                backdropFilter: 'blur(8px)',
-                border: '1.5px solid rgba(255,255,255,0.18)',
-              }}
-            >
-              <motion.div 
-                className="mb-2 sm:mb-3 lg:mb-4 transform scale-75 sm:scale-90 lg:scale-100"
-                whileHover={{ scale: 0.85, sm: { scale: 1.0 }, lg: { scale: 1.1 } }}
-                transition={{ duration: 0.2 }}
+        {featureCards.map((card, index) => {
+          // Skip protected cards for non-authenticated users
+          if (card.isProtected && !user) return null;
+          // Skip login/signup cards for authenticated users
+          if (card.hideWhenAuth && user) return null;
+
+          // Handle language toggle and other special cards
+          if (card.to === '#') {
+            return (
+              <button
+                key={index}
+                onClick={card.onClick}
+                className="focus:outline-none group"
               >
-                {card.icon}
+                <motion.div
+                  whileHover={{ 
+                    scale: 1.03,
+                    transition: { duration: 0.2 }
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ 
+                    delay: index * 0.1,
+                    duration: 0.5,
+                    ease: [0.23, 1, 0.32, 1]
+                  }}
+                  className={`flex flex-col items-center justify-center p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl bg-gradient-to-br ${card.color} text-white font-bold text-sm sm:text-lg lg:text-xl cursor-pointer select-none home-feature-card w-full aspect-square`}
+                  style={{
+                    boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+                    backdropFilter: 'blur(8px)',
+                    border: '1.5px solid rgba(255,255,255,0.18)',
+                  }}
+                >
+                  <motion.div 
+                    className="mb-2 sm:mb-3 lg:mb-4 transform scale-75 sm:scale-90 lg:scale-100"
+                    whileHover={{ scale: [0.85, 1.1] }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {card.icon}
+                    {card.darkIcon}
+                  </motion.div>
+                  <span className="text-center text-sm sm:text-base lg:text-xl px-1">{card.label[language === 'english' ? 'en' : 'hi']}</span>
+                </motion.div>
+              </button>
+            );
+          }
+
+          // Regular card with Link
+          return (
+            <Link to={card.to} key={card.to} className="focus:outline-none group">
+              <motion.div
+                whileHover={{ 
+                  scale: 1.03,
+                  transition: { duration: 0.2 }
+                }}
+                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ 
+                  delay: index * 0.1,
+                  duration: 0.5,
+                  ease: [0.23, 1, 0.32, 1]
+                }}
+                className={`flex flex-col items-center justify-center p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl bg-gradient-to-br ${card.color} text-white font-bold text-sm sm:text-lg lg:text-xl cursor-pointer select-none home-feature-card w-full aspect-square`}
+                style={{
+                  boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1.5px solid rgba(255,255,255,0.18)',
+                }}
+              >
+                <motion.div 
+                  className="mb-2 sm:mb-3 lg:mb-4 transform scale-75 sm:scale-90 lg:scale-100"
+                  whileHover={{ scale: [0.85, 1.1] }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {card.icon}
+                  {card.darkIcon}
+                </motion.div>
+                <span className="text-center text-sm sm:text-base lg:text-xl px-1">{card.label[language === 'english' ? 'en' : 'hi']}</span>
               </motion.div>
-              <span className="text-center text-sm sm:text-base lg:text-xl px-1">{card.label[language === 'english' ? 'en' : 'hi']}</span>
-            </motion.div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
         {/* Support Me Card */}
         <motion.button
           whileHover={{ 
@@ -307,9 +481,11 @@ function Home({ language }: { language: Language }) {
               onClick={() => setShowSupportModal(false)}
               aria-label="Close"
             >
-              ×
+            
             </button>
+            <Suspense fallback={<div className="p-4 text-center">Loading...</div>}>
             <PersonalSupport language={language} />
+          </Suspense>
           </motion.div>
         </motion.div>
       )}
@@ -318,21 +494,44 @@ function Home({ language }: { language: Language }) {
 }
 
 function App() {
+  // Modified to use localStorage directly since language changes happen through card on homepage
   const [language, setLanguage] = useState<Language>(() => 
     localStorage.getItem('language') as Language || 'english'
   );
 
+  // Listen for storage events to update language when changed by the Language card
   useEffect(() => {
-    localStorage.setItem('language', language);
-  }, [language]);
+    const handleStorageChange = () => {
+      const currentLanguage = localStorage.getItem('language') as Language || 'english';
+      setLanguage(currentLanguage);
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+  
+  // Effect for initial theme setup
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
 
   return (
     <Router>
       <AuthProvider>
         <NotificationProvider>
           <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
-            <Header language={language} onLanguageChange={setLanguage} />
+            <Header language={language} />
             <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <Suspense fallback={
+                <div className="flex justify-center items-center h-64">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                </div>
+              }>
               <Routes>
                 <Route path="/" element={<Home language={language} />} />
                 <Route path="/numerology" element={<NumerologyPage language={language} />} />
@@ -354,8 +553,13 @@ function App() {
                   path="/panchang"
                   element={<PanchangPage language={language} />}
                 />
+                <Route
+                  path="/partner-predict"
+                  element={<PartnerPredictPage language={language} />}
+                />
                 <Route path="*" element={<Navigate to="/" />} />
               </Routes>
+              </Suspense>
             </main>
             <Footer language={language} />
           </div>
