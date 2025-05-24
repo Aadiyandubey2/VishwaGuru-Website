@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, LogOut, LayoutDashboard, Hand, Calculator } from 'lucide-react';
+import { Menu, X, LogOut, LayoutDashboard } from 'lucide-react';
 import LanguageToggle from '../LanguageToggle';
 import ThemeToggle from '../ThemeToggle';
 import { Language } from '../../types';
@@ -71,20 +71,6 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
 
         {/* Navigation, toggles, and user info (desktop only, single row, no wrap) */}
         <div className="hidden md:flex items-center flex-nowrap gap-x-2 md:gap-x-4 min-w-0">
-          <Link
-            to="/numerology"
-            className="flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-purple-50 hover:bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200 dark:hover:bg-purple-800 transition whitespace-nowrap"
-          >
-            <Calculator size={18} className="mr-2" />
-            {language === 'english' ? 'Numerology' : 'अंकशास्त्र'}
-          </Link>
-          <Link
-            to="/palm-reading"
-            className="flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-green-50 hover:bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800 transition whitespace-nowrap"
-          >
-            <Hand size={18} className="mr-2" />
-            {language === 'english' ? 'Palm Reading' : 'हस्तरेखा'}
-          </Link>
           {user && (
             <Link
               to="/dashboard"
@@ -143,7 +129,7 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
         </div>
       </div>
 
-      {/* Mobile menu: show ALL nav, toggles, user info, owner info, but buttons are not full width */}
+      {/* Mobile menu: show nav, toggles, user info, owner info */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
@@ -153,23 +139,6 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
             className="md:hidden bg-white dark:bg-gray-800 shadow-md border-t border-gray-200 dark:border-gray-700"
           >
             <div className="flex flex-col items-center py-4 space-y-3">
-              {/* Nav links, toggles, user info, owner info */}
-              <Link
-                to="/numerology"
-                className="flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-purple-50 hover:bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200 dark:hover:bg-purple-800 transition whitespace-nowrap"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <Calculator size={18} className="mr-2" />
-                {language === 'english' ? 'Numerology' : 'अंकशास्त्र'}
-              </Link>
-              <Link
-                to="/palm-reading"
-                className="flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-green-50 hover:bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800 transition whitespace-nowrap"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <Hand size={18} className="mr-2" />
-                {language === 'english' ? 'Palm Reading' : 'हस्तरेखा'}
-              </Link>
               {user && (
                 <Link
                   to="/dashboard"
@@ -239,3 +208,6 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
 };
 
 export default Header;
+// This code defines a responsive header component for a web application using React and Framer Motion.
+// It includes a logo, navigation links, language and theme toggles, user authentication options, and owner information.
+// The header adapts to different screen sizes, showing a hamburger menu on mobile and a full navigation bar on larger screens. 
