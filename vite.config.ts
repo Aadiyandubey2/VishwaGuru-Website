@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  base: './',  // This ensures assets are loaded with relative paths
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
@@ -18,6 +19,9 @@ export default defineConfig({
       }
     },
     rollupOptions: {
+      // Ensure all external dependencies are properly bundled
+      external: [],
+      // Configuration for output files
       output: {
         manualChunks: {
           'vendor': [
