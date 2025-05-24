@@ -219,7 +219,7 @@ const PalmReading: React.FC<PalmReadingProps> = ({ onPredictionComplete, languag
                     screenshotFormat="image/jpeg"
                     className="w-full h-full rounded-xl border-4 border-indigo-200 dark:border-indigo-700 shadow-lg bg-gray-100 dark:bg-gray-900 object-cover"
                     videoConstraints={{
-                      facingMode: "user",
+                      facingMode: "environment",
                       width: 1280,
                       height: 960,
                     }}
