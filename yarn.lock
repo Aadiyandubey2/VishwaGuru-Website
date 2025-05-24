@@ -1994,6 +1994,7 @@ normalize-range@^0.1.2:
     "@tensorflow-models/handpose" "^0.0.7"
     "@tensorflow/tfjs" "^4.22.0"
     "@types/qrcode.react" "^1.0.5"
+    "@types/react-helmet" "^6.1.11"
     express "^4.21.2"
     framer-motion "^12.4.10"
     lucide-react "^0.344.0"
