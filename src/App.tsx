@@ -20,9 +20,10 @@ import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import PalmReadingPage from './pages/PalmReadingPage';
 import PanchangPage from './pages/PanchangPage';
+import PartnerPredictPage from './pages/PartnerPredictPage';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
-import { Calculator, Hand, Calendar, Smartphone as SmartphoneIcon, ExternalLink } from 'lucide-react';
+import { Calculator, Hand, Calendar, Smartphone as SmartphoneIcon, ExternalLink, Heart } from 'lucide-react';
 import { Helmet } from 'react-helmet';
 import PersonalSupport from './components/auth/Personalsupport';
 
@@ -173,15 +174,21 @@ function Home({ language }: { language: Language }) {
       label: { en: 'Panchang', hi: 'पंचांग' },
       icon: <Calendar size={48} />,
       to: '/panchang',
+      color: 'from-yellow-500 to-rose-500',
+    },
+    {
+      label: { en: 'Partner Predict', hi: 'साथी की भविष्यवाणी' },
+      icon: <Heart size={48} />,
+      to: '/partner-predict',
       color: 'from-purple-500 to-pink-500',
     },
     {
       label: { 
-        en: 'Android App Coming Soon', 
-        hi: 'एंड्रॉइड ऐप जल्द आ रहा है' 
+        en: 'Android App', 
+        hi: 'एंड्रॉइड ऐप' 
       },
       icon: <SmartphoneIcon size={48} />,
-      to: 'vishwaguru.site',
+      to: 'https://median.co/share/nopdeo#apk',
       color: 'from-teal-500 to-cyan-500',
       isExternal: true
     },
@@ -240,7 +247,7 @@ function Home({ language }: { language: Language }) {
             >
               <motion.div 
                 className="mb-2 sm:mb-3 lg:mb-4 transform scale-75 sm:scale-90 lg:scale-100"
-                whileHover={{ scale: 0.85, sm: { scale: 1.0 }, lg: { scale: 1.1 } }}
+                whileHover={{ scale: [0.85, 1.1] }}
                 transition={{ duration: 0.2 }}
               >
                 {card.icon}
@@ -353,6 +360,10 @@ function App() {
                 <Route
                   path="/panchang"
                   element={<PanchangPage language={language} />}
+                />
+                <Route
+                  path="/partner-predict"
+                  element={<PartnerPredictPage language={language} />}
                 />
                 <Route path="*" element={<Navigate to="/" />} />
               </Routes>
