@@ -4,8 +4,7 @@ import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet';
 import { useNotification } from '../utils/NotificationContext';
 import { Language } from '../types';
-import { calculatePartnerCompatibility, getPartnerPrediction } from '../utils/partnerPredictionCalculator';
-import type { DetailedPartnerPrediction } from '../utils/partnerPredictionCalculator';
+import { calculatePartnerCompatibility, getPartnerPrediction, DetailedPartnerPrediction } from '../utils/partnerPredictionCalculator';
 
 interface FormData {
     name: string;
