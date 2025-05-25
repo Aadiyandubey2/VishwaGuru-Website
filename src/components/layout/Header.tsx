@@ -1,22 +1,20 @@
-import React, { useState } from 'react';
+import { useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, LogOut, LayoutDashboard, Hand, Calculator } from 'lucide-react';
-import LanguageToggle from '../LanguageToggle';
-import ThemeToggle from '../ThemeToggle';
+import { Link } from 'react-router-dom';
+import { Menu, X } from 'lucide-react';
 import { Language } from '../../types';
 import { useAuth } from '../../utils/AuthContext';
-import ownerPhoto from '/images/owner-photo.jpg';
+// Using a direct path reference for better performance
+const ownerPhotoUrl = '/owner-photo.jpg';
 
 interface HeaderProps {
   language: Language;
-  onLanguageChange: (language: Language) => void;
+  // Removed onLanguageChange as it's available through cards on homepage
 }
 
-const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
+const Header = memo<HeaderProps>(({ language }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const ownerDetails = {
     name: language === 'english' ? 'Aadiyan Dubey' : 'आदियन दुबे',
@@ -24,14 +22,7 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
     education: language === 'english' ? 'Computer Science Student, NIT Nagaland' : 'कंप्यूटर विज्ञान छात्र, एनआईटी नागालैंड'
   };
 
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      navigate('/login');
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
-  };
+  // Sign out functionality moved to cards on homepage
 
   return (
     <motion.header 
@@ -69,67 +60,18 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
           </button>
         </div>
 
-        {/* Navigation, toggles, and user info (desktop only, single row, no wrap) */}
+        {/* User info (desktop only, single row, no wrap) */}
         <div className="hidden md:flex items-center flex-nowrap gap-x-2 md:gap-x-4 min-w-0">
-          <Link
-            to="/numerology"
-            className="flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-purple-50 hover:bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200 dark:hover:bg-purple-800 transition whitespace-nowrap"
-          >
-            <Calculator size={18} className="mr-2" />
-            {language === 'english' ? 'Numerology' : 'अंकशास्त्र'}
-          </Link>
-          <Link
-            to="/palm-reading"
-            className="flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-green-50 hover:bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800 transition whitespace-nowrap"
-          >
-            <Hand size={18} className="mr-2" />
-            {language === 'english' ? 'Palm Reading' : 'हस्तरेखा'}
-          </Link>
           {user && (
-            <Link
-              to="/dashboard"
-              className="flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200 dark:hover:bg-indigo-800 transition whitespace-nowrap"
-            >
-              <LayoutDashboard size={18} className="mr-2" />
-              {language === 'english' ? 'Dashboard' : 'डैशबोर्ड'}
-            </Link>
-          )}
-          <LanguageToggle language={language} setLanguage={onLanguageChange} />
-          <ThemeToggle />
-          {user ? (
-            <>
-              <span className="text-sm text-gray-600 dark:text-gray-300 truncate max-w-[160px]">
-                {user.email}
-              </span>
-              <button
-                onClick={handleSignOut}
-                className="flex items-center space-x-1 text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-              >
-                <LogOut size={16} />
-                <span>{language === 'english' ? 'Sign Out' : 'साइन आउट'}</span>
-              </button>
-            </>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
-              >
-                {language === 'english' ? 'Sign In' : 'साइन इन'}
-              </Link>
-              <Link
-                to="/signup"
-                className="text-sm text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-md"
-              >
-                {language === 'english' ? 'Sign Up' : 'साइन अप'}
-              </Link>
-            </>
+            <span className="text-sm text-gray-600 dark:text-gray-300 truncate max-w-[160px]">
+              {user.email}
+            </span>
           )}
           {/* Owner Info */}
           <div className="flex items-center space-x-3 border-l border-gray-200 dark:border-gray-700 pl-4 min-w-0">
             <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
               <img 
-                src={ownerPhoto}
+                src={ownerPhotoUrl}
                 alt={ownerDetails.name}
                 className="w-full h-full object-cover"
               />
@@ -143,7 +85,7 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
         </div>
       </div>
 
-      {/* Mobile menu: show ALL nav, toggles, user info, owner info, but buttons are not full width */}
+      {/* Mobile menu: show nav, toggles, user info, owner info */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
@@ -153,73 +95,17 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
             className="md:hidden bg-white dark:bg-gray-800 shadow-md border-t border-gray-200 dark:border-gray-700"
           >
             <div className="flex flex-col items-center py-4 space-y-3">
-              {/* Nav links, toggles, user info, owner info */}
-              <Link
-                to="/numerology"
-                className="flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-purple-50 hover:bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200 dark:hover:bg-purple-800 transition whitespace-nowrap"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <Calculator size={18} className="mr-2" />
-                {language === 'english' ? 'Numerology' : 'अंकशास्त्र'}
-              </Link>
-              <Link
-                to="/palm-reading"
-                className="flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-green-50 hover:bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800 transition whitespace-nowrap"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <Hand size={18} className="mr-2" />
-                {language === 'english' ? 'Palm Reading' : 'हस्तरेखा'}
-              </Link>
+              {/* Theme toggle removed - moved to home page cards */}
               {user && (
-                <Link
-                  to="/dashboard"
-                  className="flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200 dark:hover:bg-indigo-800 transition whitespace-nowrap"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <LayoutDashboard size={18} className="mr-2" />
-                  {language === 'english' ? 'Dashboard' : 'डैशबोर्ड'}
-                </Link>
-              )}
-              <div className="flex items-center gap-2">
-                <LanguageToggle language={language} setLanguage={onLanguageChange} />
-                <ThemeToggle />
-              </div>
-              {user ? (
-                <>
-                  <span className="text-sm text-gray-600 dark:text-gray-300 mt-2 block">
-                    {user.email}
-                  </span>
-                  <button
-                    onClick={() => { setIsMenuOpen(false); handleSignOut(); }}
-                    className="flex items-center space-x-1 text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 mt-2"
-                  >
-                    <LogOut size={16} />
-                    <span>{language === 'english' ? 'Sign Out' : 'साइन आउट'}</span>
-                  </button>
-                </>
-              ) : (
-                <div className="flex flex-col items-center space-y-2">
-                  <Link
-                    to="/login"
-                    className="text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {language === 'english' ? 'Sign In' : 'साइन इन'}
-                  </Link>
-                  <Link
-                    to="/signup"
-                    className="text-sm text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-md"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {language === 'english' ? 'Sign Up' : 'साइन अप'}
-                  </Link>
-                </div>
+                <span className="text-sm text-gray-600 dark:text-gray-300 mt-2 block">
+                  {user.email}
+                </span>
               )}
               {/* Owner Info in Mobile Menu */}
               <div className="flex items-center space-x-3 pt-2">
                 <div className="w-8 h-8 rounded-full overflow-hidden">
                   <img 
-                    src={ownerPhoto}
+                    src={ownerPhotoUrl}
                     alt={ownerDetails.name}
                     className="w-full h-full object-cover"
                   />
@@ -236,6 +122,9 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
       </AnimatePresence>
     </motion.header>
   );
-};
+});
 
 export default Header;
+
+// Add display name for debugging
+Header.displayName = 'Header';

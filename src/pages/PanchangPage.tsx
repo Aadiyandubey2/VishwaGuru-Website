@@ -22,6 +22,16 @@ function PanchangPage({ language }: { language: Language }) {
           </svg>
           {language === 'english' ? 'Back to Home' : 'होम पेज पर वापस जाएं'}
         </Link>
+        
+        <div className="flex flex-col items-center mb-8">
+          <div className="h-64 md:h-80 lg:h-96 w-auto flex items-center justify-center bg-transparent dark:bg-transparent rounded-lg p-4">
+            <img 
+              src="/VishwaGuruLogo.png"
+              alt="VishwaGuru Logo" 
+              className="h-full w-auto object-contain dark:invert transform hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+        </div>
 
         <motion.div
           initial={{ opacity: 0, y: -20 }}
