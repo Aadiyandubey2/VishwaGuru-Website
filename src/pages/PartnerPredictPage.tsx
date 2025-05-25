@@ -69,9 +69,9 @@ export default function PartnerPredictPage({ language }: { language: Language })
                     </svg>
                     {language === 'english' ? 'Back to Home' : 'होम पेज पर वापस जाएं'}
                 </Link>
-
+                
                 <div className="flex flex-col items-center mb-8">
-                    <div className="h-48 md:h-64 lg:h-80 w-auto flex items-center justify-center bg-transparent dark:bg-transparent rounded-lg p-4">
+                    <div className="h-64 md:h-80 lg:h-96 w-auto flex items-center justify-center bg-transparent dark:bg-transparent rounded-lg p-4">
                         <img 
                             src="/VishwaGuruLogo.png"
                             alt="VishwaGuru Logo" 

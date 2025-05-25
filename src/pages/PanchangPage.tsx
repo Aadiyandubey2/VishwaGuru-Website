@@ -1,4 +1,4 @@
-// React is used implicitly for JSX
+import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { Language } from '../types';
@@ -24,7 +24,7 @@ function PanchangPage({ language }: { language: Language }) {
         </Link>
         
         <div className="flex flex-col items-center mb-8">
-          <div className="h-48 md:h-64 lg:h-80 w-auto flex items-center justify-center bg-transparent dark:bg-transparent rounded-lg p-4">
+          <div className="h-64 md:h-80 lg:h-96 w-auto flex items-center justify-center bg-transparent dark:bg-transparent rounded-lg p-4">
             <img 
               src="/VishwaGuruLogo.png"
               alt="VishwaGuru Logo" 
