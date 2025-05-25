@@ -10,6 +10,8 @@ function generateSitemap() {
       { url: '/', changefreq: 'daily', priority: '1.0' },
       { url: '/numerology', changefreq: 'daily', priority: '1.0' },
       { url: '/palm-reading', changefreq: 'daily', priority: '1.0' },
+      { url: '/panchang', changefreq: 'daily', priority: '1.0' },
+      { url: '/partner-predict', changefreq: 'daily', priority: '1.0' },
       { url: '/dashboard', changefreq: 'daily', priority: '0.9' },
       { url: '/login', changefreq: 'weekly', priority: '0.8' },
       { url: '/signup', changefreq: 'weekly', priority: '0.8' }
